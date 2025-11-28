@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/11/28 16:45:33 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/11/28 16:59:23 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,4 +22,9 @@ int main(int ac, char *av[])
 		return (1);
 	}
 	forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(av[1]));
+	if (!forks)
+		return (1);
 }
+
+// Things to free:
+// -forks
