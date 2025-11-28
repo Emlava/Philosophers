@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/11/28 17:38:06 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/11/28 17:46:47 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	manage_forks(pthread_mutex_t **forks, int nbr_of_forks)
 	i = 0;
 	while (i < nbr_of_forks)
 		pthread_mutex_init(&(*forks)[i++], NULL);
-		
+	// Add a check for each call to pthread_mute_init()	
 }
 
 int main(int ac, char *av[])
