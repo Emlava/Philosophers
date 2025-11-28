@@ -6,11 +6,24 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/11/28 16:59:23 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/11/28 17:38:06 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	manage_forks(pthread_mutex_t **forks, int nbr_of_forks)
+{
+	int	i;
+
+	*forks = malloc(sizeof(pthread_mutex_t) * nbr_of_forks);
+	if (!*forks)
+		return (0);
+	i = 0;
+	while (i < nbr_of_forks)
+		pthread_mutex_init(&(*forks)[i++], NULL);
+		
+}
 
 int main(int ac, char *av[])
 {
@@ -21,8 +34,7 @@ int main(int ac, char *av[])
 		write(2, "Incorrect number of arguments\n", 30);
 		return (1);
 	}
-	forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(av[1]));
-	if (!forks)
+	if (!manage_forks(&forks, ft_atoi(av[1])))
 		return (1);
 }
 
