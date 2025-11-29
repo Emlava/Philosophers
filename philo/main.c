@@ -6,11 +6,24 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/11/28 17:52:17 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/11/29 12:48:12 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	destroy_mutexes(pthread_mutex_t *forks, int nbr_of_forks)
+{
+	int	i;
+
+	if (!nbr_of_forks)
+		return ;
+	i = 0;
+	while (i < nbr_of_forks)
+		pthread_mutex_destroy(&(forks[i++]));
+	free(forks);
+	return ;
+}
 
 int	manage_forks(pthread_mutex_t **forks, int nbr_of_forks)
 {
