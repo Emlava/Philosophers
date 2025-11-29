@@ -6,18 +6,17 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/11/29 12:48:12 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/11/29 12:55:09 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+// The mutexes must be unlocked
 void	destroy_mutexes(pthread_mutex_t *forks, int nbr_of_forks)
 {
 	int	i;
 
-	if (!nbr_of_forks)
-		return ;
 	i = 0;
 	while (i < nbr_of_forks)
 		pthread_mutex_destroy(&(forks[i++]));
@@ -37,7 +36,7 @@ int	manage_forks(pthread_mutex_t **forks, int nbr_of_forks)
 	{
 		if (pthread_mutex_init(&(*forks)[i], NULL) != 0)
 		{
-			// free stuff
+			destroy_mutexes(*forks, i);
 			return (0);
 		}
 		i++;
@@ -58,5 +57,6 @@ int main(int ac, char *av[])
 		return (1);
 }
 
-// Things to free:
-// -forks
+// Things to free/destroy:
+// -forks pointer
+// -Each mutex
