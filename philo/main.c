@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/11/29 12:55:09 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/11/30 17:42:06 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,20 @@ int	manage_forks(pthread_mutex_t **forks, int nbr_of_forks)
 	return (1);
 }
 
+void	convert_args_to_int(char *av[], t_args *arguments, int ac)
+{
+	arguments->nbr_of_philos = ft_atoi(av[1]);
+	arguments->time_to_die = ft_atoi(av[2]);
+	arguments->time_to_eat = ft_atoi(av[3]);
+	arguments->time_to_sleep = ft_atoi(av[4]);
+	if (ac == 6)
+		arguments->nbr_of_meals = ft_atoi(av[5]);
+	return ;
+}
+
 int main(int ac, char *av[])
 {
+	t_args			arguments;
 	pthread_mutex_t	*forks;
 	
 	if (ac < 5 || ac > 6)
@@ -53,8 +65,10 @@ int main(int ac, char *av[])
 		write(2, "Incorrect number of arguments\n", 30);
 		return (1);
 	}
-	if (!manage_forks(&forks, ft_atoi(av[1])))
+	convert_args_to_int(av, &arguments, ac);
+	if (!manage_forks(&forks, arguments.nbr_of_philos));
 		return (1);
+	// Create threads/philosophers on a while loop
 }
 
 // Things to free/destroy:
