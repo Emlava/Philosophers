@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/11/30 17:42:06 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/02 21:15:05 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,31 +44,40 @@ int	manage_forks(pthread_mutex_t **forks, int nbr_of_forks)
 	return (1);
 }
 
-void	convert_args_to_int(char *av[], t_args *arguments, int ac)
+void	convert_args_to_int(char *av[], t_resources *resources, int ac)
 {
-	arguments->nbr_of_philos = ft_atoi(av[1]);
-	arguments->time_to_die = ft_atoi(av[2]);
-	arguments->time_to_eat = ft_atoi(av[3]);
-	arguments->time_to_sleep = ft_atoi(av[4]);
+	resources->nbr_of_philos = ft_atoi(av[1]);
+	resources->time_to_die = ft_atoi(av[2]);
+	resources->time_to_eat = ft_atoi(av[3]);
+	resources->time_to_sleep = ft_atoi(av[4]);
 	if (ac == 6)
-		arguments->nbr_of_meals = ft_atoi(av[5]);
+		resources->nbr_of_meals = ft_atoi(av[5]);
+	else
+		resources->nbr_of_meals = -1;
 	return ;
 }
 
 int main(int ac, char *av[])
 {
-	t_args			arguments;
-	pthread_mutex_t	*forks;
+	t_resources	resources;
+	t_threads	*curr_thread;
 	
 	if (ac < 5 || ac > 6)
 	{
 		write(2, "Incorrect number of arguments\n", 30);
 		return (1);
 	}
-	convert_args_to_int(av, &arguments, ac);
-	if (!manage_forks(&forks, arguments.nbr_of_philos));
+	convert_args_to_int(av, &resources, ac);
+	if (!manage_forks(&resources.forks, resources.nbr_of_philos));
 		return (1);
+	// Allocate each node of t_threads (as many as there are philosophers)
 	// Create threads/philosophers on a while loop
+	while (ac--)
+	{
+		pthread_create();
+		curr_thread = curr_thread->next;
+	}
+	return (0);
 }
 
 // Things to free/destroy:
