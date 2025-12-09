@@ -35,7 +35,7 @@ int	launch_threads(t_resources *resources, t_threads *threads)
 		curr_thread = curr_thread->next;
 		resources->curr_philo++;
 	}
-	// Join or detach threads?
+	// Join or detach threads
 }
 
 int main(int ac, char *av[])
