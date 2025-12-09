@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 21:18:57 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/07 15:58:21 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/09 21:15:40 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,13 @@
 
 typedef struct s_resources
 {
-	int	nbr_of_philos;
-	int	time_to_die;
-	int	time_to_eat;
-	int	time_to_sleep;
-	int	nbr_of_meals;
+	int				nbr_of_philos;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				nbr_of_meals;
 	pthread_mutex_t *forks;
+	int				curr_philo;
 }	t_resources;
 
 typedef struct s_threads
