@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 15:55:58 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/07 15:57:00 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/10 20:38:59 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ static int	ft_atoi(const char *nptr)
 	if (minus)
 		result = -result;
 	return ((int)result);
+}
 
 int	convert_args_to_int(char *av[], t_resources *resources, int ac)
 {

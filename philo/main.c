@@ -6,36 +6,40 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/12/09 21:18:24 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/10 20:40:52 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+// This function is only ran by the philosophers
 void	*start_routine(void *resources)
 {}
 
-int	launch_threads(t_resources *resources, t_threads *threads)
+int	manage_threads(t_resources *resources, t_threads *threads)
 {
 	t_threads	*curr_thread;
+	int			return_value;
 	
 	resources->curr_philo = 1;
 	curr_thread = threads;
-	// Create threads/philosophers on a while loop
+	return_value = 1;
 	while (resources->curr_philo <= resources->nbr_of_philos)
 	{
 		if (pthread_create(curr_thread, NULL, start_routine, resources) != 0)
 		{
-			// Detach/join the created threads
-			free_thread_list(threads);
-			destroy_forks(resources->forks, resources->nbr_of_philos);
-			return (0);
+			// Detach the created threads (use curr_philo as a reference value)
+			return_value = 0;
+			break ;
 		}
 		// This stores the ID of the new thread in the buffer pointed to by curr_thread
 		curr_thread = curr_thread->next;
 		resources->curr_philo++;
 	}
-	// Join or detach threads
+	// if (return_value == 1) Join the created threads? (Find way to check for deaths)
+	free_thread_list(threads);
+	destroy_forks(resources->forks, resources->nbr_of_philos);
+	return (return_value);
 }
 
 int main(int ac, char *av[])
@@ -58,8 +62,11 @@ int main(int ac, char *av[])
 		destroy_forks(&resources.forks, resources.nbr_of_philos);
 		return (4);
 	}
-	if (!launch_threads(&resources, threads))
+	if (!manage_threads(&resources, threads))
+	{
+		write(2, "Failed to create thread\n", 24);
 		return (5);
+	}
 	return (0);
 }
 

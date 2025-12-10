@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 21:18:57 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/09 21:15:40 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/10 20:38:42 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,6 @@ typedef struct s_threads
 	struct s_threads	*next;
 	struct s_threads	*prev;
 }	t_threads;
-
-/**** atoi.c ****/
-int	ft_atoi(const char *nptr);
 
 /**** utilities/setup_utils.c ****/
 int	convert_args_to_int(char *av[], t_resources *resources, int ac);
