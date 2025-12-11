@@ -6,18 +6,25 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/12/11 17:47:41 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/11 18:47:25 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 // This function is only run by the philosophers
-void	*start_routine(void *resources)
+void	*start_routine(void *arg)
 {
+	t_resources	*resources;
+	
+	resources = (t_resources*)arg;
 	// Eating
 	// Thinking
 	// Sleeping
+	//
+	printf("Philosopher %d exists\n", resources->curr_philo);
+	//
+	return (NULL);
 }
 
 int	manage_threads(t_resources *resources, t_threads *threads)
@@ -30,7 +37,7 @@ int	manage_threads(t_resources *resources, t_threads *threads)
 	return_value = 1;
 	while (resources->curr_philo <= resources->nbr_of_philos)
 	{
-		if (pthread_create(curr_thread, NULL, start_routine, resources) != 0)
+		if (pthread_create(&curr_thread->thread, NULL, start_routine, resources) != 0)
 		{
 			while (resources->nbr_of_philos--)
 			{
@@ -45,6 +52,15 @@ int	manage_threads(t_resources *resources, t_threads *threads)
 		resources->curr_philo++;
 	}
 	// if (return_value == 1) Join the created threads? (Find way to check for deaths)
+	if (return_value == 1)
+	{
+		while (resources->nbr_of_philos--)
+		{
+			pthread_join(threads->thread, NULL);
+			threads = threads->next;
+		}
+	}
+	printf("here\n");
 	free_thread_list(threads);
 	destroy_forks(resources->forks, resources->nbr_of_philos);
 	return (return_value);
@@ -62,12 +78,12 @@ int main(int ac, char *av[])
 	}
 	if (!convert_args_to_int(av, &resources, ac))
 		return (2);
-	if (!create_forks(&resources.forks, resources.nbr_of_philos));
+	if (!create_forks(&resources.forks, resources.nbr_of_philos))
 		return (3);
 	if (!allocate_thread_list(&threads, resources.nbr_of_philos))
 	{
 		// Find a way to destroy the forks inside the called function
-		destroy_forks(&resources.forks, resources.nbr_of_philos);
+		destroy_forks(resources.forks, resources.nbr_of_philos);
 		return (4);
 	}
 	if (!manage_threads(&resources, threads))
