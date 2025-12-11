@@ -6,15 +6,19 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/12/10 20:40:52 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/11 17:47:41 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// This function is only ran by the philosophers
+// This function is only run by the philosophers
 void	*start_routine(void *resources)
-{}
+{
+	// Eating
+	// Thinking
+	// Sleeping
+}
 
 int	manage_threads(t_resources *resources, t_threads *threads)
 {
@@ -28,7 +32,11 @@ int	manage_threads(t_resources *resources, t_threads *threads)
 	{
 		if (pthread_create(curr_thread, NULL, start_routine, resources) != 0)
 		{
-			// Detach the created threads (use curr_philo as a reference value)
+			while (resources->nbr_of_philos--)
+			{
+				pthread_detach(threads->thread);
+				threads = threads->next;
+			}
 			return_value = 0;
 			break ;
 		}
