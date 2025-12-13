@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/12/11 18:47:25 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/13 02:15:07 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ int	manage_threads(t_resources *resources, t_threads *threads)
 			threads = threads->next;
 		}
 	}
-	printf("here\n");
 	free_thread_list(threads);
 	destroy_forks(resources->forks, resources->nbr_of_philos);
 	return (return_value);
