@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/06 18:12:19 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/07 15:56:22 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/13 17:17:02 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,16 @@ void	destroy_forks(pthread_mutex_t *forks, int nbr_of_forks)
 }
 
 // The pointer passed must be the head of the list
-void	free_thread_list(t_threads *threads)
+void	free_philos_list(t_philosophers *philosophers)
 {
-	t_threads	*tmp;
-	
-	while (threads->next != NULL)
+	t_philosophers	*tmp;
+
+	while (philosophers->next != NULL)
 	{
-		tmp = threads;
-		threads = threads->next;
+		tmp = philosophers;
+		philosophers = philosophers->next;
 		free(tmp);
 	}
-	free(threads);
+	free(philosophers);
 	return ;
 }

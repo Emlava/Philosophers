@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/12/13 02:15:07 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/13 19:58:27 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,60 +15,70 @@
 // This function is only run by the philosophers
 void	*start_routine(void *arg)
 {
-	t_resources	*resources;
+	t_resources		*resources;
+	pthread_mutex_t	nbr_lock;
+	int				philosopher;
 	
 	resources = (t_resources*)arg;
 	// Eating
 	// Thinking
 	// Sleeping
+	
+	// START HERE TOMORROW
+	// Lock philo_nbr with nbr_lock and assign it to philosopher
+	
 	//
-	printf("Philosopher %d exists\n", resources->curr_philo);
+	printf("Philosopher %d exists\n", resources->philo_nbr);
 	//
 	return (NULL);
 }
 
-int	manage_threads(t_resources *resources, t_threads *threads)
+int	manage_philosophers(t_resources *resources, t_philosophers *philosophers)
 {
-	t_threads	*curr_thread;
-	int			return_value;
+	int				created_philos;
+	t_philosophers	*curr_philosopher;
+	int				return_value;
 	
-	resources->curr_philo = 1;
-	curr_thread = threads;
+	created_philos = 0;
+	resources->philo_nbr = 0;
+	curr_philosopher = philosophers;
 	return_value = 1;
-	while (resources->curr_philo <= resources->nbr_of_philos)
+	while (created_philos++ < resources->requested_philos)
 	{
-		if (pthread_create(&curr_thread->thread, NULL, start_routine, resources) != 0)
+		if (pthread_create(curr_philosopher->thread, NULL, start_routine, resources) != 0)
 		{
-			while (resources->nbr_of_philos--)
-			{
-				pthread_detach(threads->thread);
-				threads = threads->next;
-			}
 			return_value = 0;
 			break ;
 		}
-		// This stores the ID of the new thread in the buffer pointed to by curr_thread
-		curr_thread = curr_thread->next;
-		resources->curr_philo++;
+		curr_philosopher = curr_philosopher->next;
 	}
-	// if (return_value == 1) Join the created threads? (Find way to check for deaths)
+	curr_philosopher = philosophers;
+	// if (return_value == 1) Join the created philosophers? (Find way to check for deaths)
 	if (return_value == 1)
 	{
-		while (resources->nbr_of_philos--)
+		while (resources->requested_philos--)
 		{
-			pthread_join(threads->thread, NULL);
-			threads = threads->next;
+			pthread_join(curr_philosopher->thread, NULL);
+			curr_philosopher = curr_philosopher->next;
 		}
 	}
-	free_thread_list(threads);
-	destroy_forks(resources->forks, resources->nbr_of_philos);
+	else
+	{
+		while (--created_philos)
+		{
+			pthread_detach(curr_philosopher->thread);
+			curr_philosopher = curr_philosopher->next;
+		}
+	}
+	free_philos_list(philosophers);
+	destroy_forks(resources->forks, resources->requested_philos);
 	return (return_value);
 }
 
 int main(int ac, char *av[])
 {
 	t_resources	resources;
-	t_threads	*threads;
+	t_philosophers	*philosophers;
 	
 	if (ac < 5 || ac > 6)
 	{
@@ -77,15 +87,15 @@ int main(int ac, char *av[])
 	}
 	if (!convert_args_to_int(av, &resources, ac))
 		return (2);
-	if (!create_forks(&resources.forks, resources.nbr_of_philos))
+	if (!create_forks(&resources.forks, resources.requested_philos))
 		return (3);
-	if (!allocate_thread_list(&threads, resources.nbr_of_philos))
+	if (!allocate_philos_list(&philosophers, resources.requested_philos))
 	{
 		// Find a way to destroy the forks inside the called function
-		destroy_forks(resources.forks, resources.nbr_of_philos);
+		destroy_forks(resources.forks, resources.requested_philos);
 		return (4);
 	}
-	if (!manage_threads(&resources, threads))
+	if (!manage_philosophers(&resources, philosophers))
 	{
 		write(2, "Failed to create thread\n", 24);
 		return (5);

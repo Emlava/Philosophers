@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 15:55:58 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/10 20:38:59 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/13 19:24:31 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ static int	ft_atoi(const char *nptr)
 
 int	convert_args_to_int(char *av[], t_resources *resources, int ac)
 {
-	resources->nbr_of_philos = ft_atoi(av[1]);
-	if (resources->nbr_of_philos <= 0)
+	resources->requested_philos = ft_atoi(av[1]);
+	if (resources->requested_philos <= 0)
 		return (0);
 	resources->time_to_die = ft_atoi(av[2]);
 	resources->time_to_eat = ft_atoi(av[3]);
@@ -59,7 +59,7 @@ int	convert_args_to_int(char *av[], t_resources *resources, int ac)
 		resources->nbr_of_meals = ft_atoi(av[5]);
 	else
 		resources->nbr_of_meals = -1;
-	if (resources->nbr_of_philos <= 0 || resources->time_to_die < 0
+	if (resources->requested_philos <= 0 || resources->time_to_die < 0
 		|| resources->time_to_eat < 0 || resources->time_to_sleep < 0
 		|| (ac == 6 && resources->nbr_of_meals <= 0))
 		return (0);
@@ -87,28 +87,28 @@ int	create_forks(pthread_mutex_t **forks, int nbr_of_forks)
 	return (1);
 }
 
-int	allocate_thread_list(t_threads **threads, int nbr_of_philos)
+int	allocate_philos_list(t_philosophers **philosophers, int requested_philos)
 {
-	t_threads	*threads_cpy;
+	t_philosophers	*philosophers_cpy;
 	int	i;
 
-	*threads = malloc(sizeof(t_threads));
-	if (!(*threads))
+	*philosophers = malloc(sizeof(t_philosophers));
+	if (!(*philosophers))
 		return (0);
-	(*threads)->next = NULL;
-	threads_cpy = *threads;
+	(*philosophers)->next = NULL;
+	philosophers_cpy = *philosophers;
 	i = 1;
-	while (i++ < nbr_of_philos)
+	while (i++ < requested_philos)
 	{
-		threads_cpy->next = malloc(sizeof(t_threads));
-		if (!threads_cpy->next)
+		philosophers_cpy->next = malloc(sizeof(t_philosophers));
+		if (!philosophers_cpy->next)
 		{
-			threads_cpy->next = NULL;
-			free_thread_list(*threads);	
+			philosophers_cpy->next = NULL;
+			free_philos_list(*philosophers);	
 			return (0);
 		}
-		threads_cpy = threads_cpy->next;
+		philosophers_cpy = philosophers_cpy->next;
 	}
-	threads_cpy->next = NULL;
+	philosophers_cpy->next = NULL;
 	return (1);
 }

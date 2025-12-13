@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 21:18:57 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/11 18:57:30 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/13 19:24:31 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,29 +22,28 @@
 
 typedef struct s_resources
 {
-	int				nbr_of_philos;
+	int				requested_philos;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nbr_of_meals;
 	pthread_mutex_t *forks;
-	int				curr_philo;
+	int				philo_nbr;
 }	t_resources;
 
-typedef struct s_threads
+typedef struct s_philosophers
 {
-	pthread_t			thread;
-	struct s_threads	*next;
-	struct s_threads	*prev;
-}	t_threads;
+	pthread_t				thread;
+	struct s_philosophers	*next;
+}	t_philosophers;
 
 /**** utilities/setup_utils.c ****/
 int	convert_args_to_int(char *av[], t_resources *resources, int ac);
 int	create_forks(pthread_mutex_t **forks, int nbr_of_forks);
-int	allocate_thread_list(t_threads **threads, int nbr_of_philos);
+int	allocate_philos_list(t_philosophers **philosophers, int requested_philos);
 
 /**** utilities/cleaning_utils.c ****/
 void	destroy_forks(pthread_mutex_t *forks, int nbr_of_forks);
-void	free_thread_list(t_threads *threads);
+void	free_philos_list(t_philosophers *philosophers);
 
 #endif
