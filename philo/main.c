@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/12/13 19:58:27 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/14 16:53:02 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ void	*start_routine(void *arg)
 	
 	// START HERE TOMORROW
 	// Lock philo_nbr with nbr_lock and assign it to philosopher
-	
 	//
 	printf("Philosopher %d exists\n", resources->philo_nbr);
 	//
@@ -87,7 +86,7 @@ int main(int ac, char *av[])
 	}
 	if (!convert_args_to_int(av, &resources, ac))
 		return (2);
-	if (!create_forks(&resources.forks, resources.requested_philos))
+	if (!create_forks_and_locks(&resources.forks, resources.requested_philos))
 		return (3);
 	if (!allocate_philos_list(&philosophers, resources.requested_philos))
 	{

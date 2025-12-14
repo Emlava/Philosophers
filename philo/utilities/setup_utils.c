@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 15:55:58 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/13 19:24:31 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/14 17:14:43 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,14 +67,18 @@ int	convert_args_to_int(char *av[], t_resources *resources, int ac)
 		return (1);
 }
 
-int	create_forks(pthread_mutex_t **forks, int nbr_of_forks)
+int	create_forks_and_locks(pthread_mutex_t **forks, int nbr_of_forks, pthread_mutex_t *nbr_lock)
 {
 	int	i;
 
+	// PASS RESOURCES STRUCTURE BY REFERENCE AND INITIALIZE ALL THE MUTEXES (FORKS AND LOCKS)
 	*forks = malloc(sizeof(pthread_mutex_t) * nbr_of_forks);
 	if (!*forks)
 		return (0);
 	i = 0;
+	//
+	// pthread_mutex_init(nbr_lock, NULL);
+	//
 	while (i < nbr_of_forks)
 	{
 		if (pthread_mutex_init(&(*forks)[i], NULL) != 0)
