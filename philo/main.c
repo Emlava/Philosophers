@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/12/15 20:54:15 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/15 23:45:19 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ void	*start_routine(void *arg)
 	resources = (t_resources*)arg;
 	pthread_mutex_lock(&resources->philo_nbr_lock);
 	philosopher = ++resources->philo_nbr;
-	pthread_mutex_unlock(&resources->philo_nbr_lock);
 	//
 	printf("Philosopher %d exists\n", philosopher);
 	//
+	pthread_mutex_unlock(&resources->philo_nbr_lock);
 	// Eating
 	// Thinking
 	// Sleeping
