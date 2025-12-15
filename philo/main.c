@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/12/14 16:53:02 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/15 20:54:15 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,19 @@
 void	*start_routine(void *arg)
 {
 	t_resources		*resources;
-	pthread_mutex_t	nbr_lock;
 	int				philosopher;
 	
 	resources = (t_resources*)arg;
+	pthread_mutex_lock(&resources->philo_nbr_lock);
+	philosopher = ++resources->philo_nbr;
+	pthread_mutex_unlock(&resources->philo_nbr_lock);
+	//
+	printf("Philosopher %d exists\n", philosopher);
+	//
 	// Eating
 	// Thinking
 	// Sleeping
 	
-	// START HERE TOMORROW
-	// Lock philo_nbr with nbr_lock and assign it to philosopher
-	//
-	printf("Philosopher %d exists\n", resources->philo_nbr);
-	//
 	return (NULL);
 }
 
@@ -44,7 +44,7 @@ int	manage_philosophers(t_resources *resources, t_philosophers *philosophers)
 	return_value = 1;
 	while (created_philos++ < resources->requested_philos)
 	{
-		if (pthread_create(curr_philosopher->thread, NULL, start_routine, resources) != 0)
+		if (pthread_create(&curr_philosopher->thread, NULL, start_routine, resources) != 0)
 		{
 			return_value = 0;
 			break ;
@@ -52,7 +52,6 @@ int	manage_philosophers(t_resources *resources, t_philosophers *philosophers)
 		curr_philosopher = curr_philosopher->next;
 	}
 	curr_philosopher = philosophers;
-	// if (return_value == 1) Join the created philosophers? (Find way to check for deaths)
 	if (return_value == 1)
 	{
 		while (resources->requested_philos--)
@@ -71,6 +70,8 @@ int	manage_philosophers(t_resources *resources, t_philosophers *philosophers)
 	}
 	free_philos_list(philosophers);
 	destroy_forks(resources->forks, resources->requested_philos);
+	pthread_mutex_destroy(&resources->philo_nbr_lock);
+	pthread_mutex_destroy(&resources->print_lock);
 	return (return_value);
 }
 
@@ -86,24 +87,28 @@ int main(int ac, char *av[])
 	}
 	if (!convert_args_to_int(av, &resources, ac))
 		return (2);
-	if (!create_forks_and_locks(&resources.forks, resources.requested_philos))
+	if (!create_forks(&resources))
 		return (3);
+	if (!create_locks(&resources))
+		return (4);
 	if (!allocate_philos_list(&philosophers, resources.requested_philos))
 	{
-		// Find a way to destroy the forks inside the called function
+		// Find a way to destroy the forks and locks inside the called function
 		destroy_forks(resources.forks, resources.requested_philos);
-		return (4);
+		pthread_mutex_destroy(&resources.philo_nbr_lock);
+		pthread_mutex_destroy(&resources.print_lock);
+		return (5);
 	}
 	if (!manage_philosophers(&resources, philosophers))
 	{
 		write(2, "Failed to create thread\n", 24);
-		return (5);
+		return (6);
 	}
 	return (0);
 }
 
 // Things to free/destroy:
-// -Each mutex (fork)
+// -Each mutex (forks and locks)
 // -forks pointer
 // -Each thread (detach/join)
 // -thread list (free)

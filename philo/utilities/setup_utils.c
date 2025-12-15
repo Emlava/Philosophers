@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 15:55:58 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/14 17:14:43 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/15 20:23:13 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,28 +67,44 @@ int	convert_args_to_int(char *av[], t_resources *resources, int ac)
 		return (1);
 }
 
-int	create_forks_and_locks(pthread_mutex_t **forks, int nbr_of_forks, pthread_mutex_t *nbr_lock)
+int	create_forks(t_resources *resources)
 {
 	int	i;
 
-	// PASS RESOURCES STRUCTURE BY REFERENCE AND INITIALIZE ALL THE MUTEXES (FORKS AND LOCKS)
-	*forks = malloc(sizeof(pthread_mutex_t) * nbr_of_forks);
-	if (!*forks)
+	resources->forks = malloc(sizeof(pthread_mutex_t) * resources->requested_philos);
+	if (!resources->forks)
 		return (0);
 	i = 0;
-	//
-	// pthread_mutex_init(nbr_lock, NULL);
-	//
-	while (i < nbr_of_forks)
+	while (i < resources->requested_philos)
 	{
-		if (pthread_mutex_init(&(*forks)[i], NULL) != 0)
+		if (pthread_mutex_init(&resources->forks[i], NULL) != 0)
 		{
-			destroy_forks(*forks, i);
+			destroy_forks(resources->forks, i);
 			return (0);
 		}
 		i++;
 	}
 	return (1);
+}
+
+int	create_locks(t_resources *resources)
+{
+	int	return_value;
+
+	return_value = 1;
+	if (pthread_mutex_init(&resources->philo_nbr_lock, NULL) != 0)
+		return_value = 0;
+	if (return_value != 0)
+	{
+		if (pthread_mutex_init(&resources->print_lock, NULL) != 0)
+		{
+			return_value = 0;
+			pthread_mutex_destroy(&resources->philo_nbr_lock);
+		}
+	}
+	if (return_value == 0)
+		destroy_forks(resources->forks, resources->requested_philos);
+	return (return_value);
 }
 
 int	allocate_philos_list(t_philosophers **philosophers, int requested_philos)

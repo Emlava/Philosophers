@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 21:18:57 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/14 16:55:56 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/15 20:32:34 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ typedef struct s_resources
 	int				time_to_sleep;
 	int				nbr_of_meals;
 	pthread_mutex_t *forks;
+	pthread_mutex_t philo_nbr_lock;
+	pthread_mutex_t print_lock;
 	int				philo_nbr;
 }	t_resources;
 
@@ -39,7 +41,8 @@ typedef struct s_philosophers
 
 /**** utilities/setup_utils.c ****/
 int	convert_args_to_int(char *av[], t_resources *resources, int ac);
-int	create_forks_and_locks(pthread_mutex_t **forks, int nbr_of_forks, pthread_mutex_t *nbr_lock);
+int	create_forks(t_resources *resources);
+int	create_locks(t_resources *resources);
 int	allocate_philos_list(t_philosophers **philosophers, int requested_philos);
 
 /**** utilities/cleaning_utils.c ****/
