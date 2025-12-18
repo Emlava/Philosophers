@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/12/15 23:45:19 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/18 18:04:08 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ void	*start_routine(void *arg)
 	printf("Philosopher %d exists\n", philosopher);
 	//
 	pthread_mutex_unlock(&resources->philo_nbr_lock);
+	//
+	print_state_change(resources->initial_time, resources->philo_nbr, D);
+	//
 	// Eating
 	// Thinking
 	// Sleeping
@@ -41,6 +44,7 @@ int	manage_philosophers(t_resources *resources, t_philosophers *philosophers)
 	created_philos = 0;
 	resources->philo_nbr = 0;
 	curr_philosopher = philosophers;
+	gettimeofday(&resources->initial_time, NULL);
 	return_value = 1;
 	while (created_philos++ < resources->requested_philos)
 	{
@@ -77,7 +81,7 @@ int	manage_philosophers(t_resources *resources, t_philosophers *philosophers)
 
 int main(int ac, char *av[])
 {
-	t_resources	resources;
+	t_resources		resources;
 	t_philosophers	*philosophers;
 	
 	if (ac < 5 || ac > 6)
