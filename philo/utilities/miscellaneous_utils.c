@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 16:11:46 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/18 18:18:55 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/19 13:57:25 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,12 @@ static long	time_stamp_ms(struct timeval initial_time, struct timeval current_ti
 	return ((long)((current_microseconds - initial_microseconds) / 1000));
 }
 
-void	print_state_change(struct timeval initial_time, int philosopher, char *new_state)
+void	print_state_change(struct timeval initial_time, int philosopher, char *new_state, pthread_mutex_t *print_lock)
 {
 	struct timeval	current_time;
 
 	// Add check to lock mutex in case the current philosopher has died
 	gettimeofday(&current_time, NULL);
-	printf("%ld %d %s\n", time_stamp_ms(initial_time, current_time), philosopher, new_state);
+	printf("%ldms %d %s\n", time_stamp_ms(initial_time, current_time), philosopher, new_state);
 	return ;
 }

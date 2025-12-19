@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
-/*   Updated: 2025/12/19 01:10:32 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/19 13:48:46 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	*start_routine(void *arg)
 	//
 	pthread_mutex_unlock(&resources->philo_nbr_lock);
 	//
-	print_state_change(resources->initial_time, resources->philo_nbr, D);
+	print_state_change(resources->initial_time, philosopher, D, &resources->print_lock);
 	//
 	// Eating
 	// Thinking
