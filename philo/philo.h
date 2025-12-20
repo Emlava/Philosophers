@@ -6,7 +6,11 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 21:18:57 by elara-va          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/12/19 13:47:53 by elara-va         ###   ########.fr       */
+=======
+/*   Updated: 2025/12/20 19:38:49 by elara-va         ###   ########.fr       */
+>>>>>>> f264050 (.)
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +41,8 @@ typedef struct s_resources
 	pthread_mutex_t print_lock;
 	int				philo_nbr;
 	struct timeval	initial_time;
+	int				death_flag;
+	int				stop_flag;
 }	t_resources;
 
 typedef struct s_philosophers

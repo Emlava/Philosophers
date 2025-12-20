@@ -6,7 +6,11 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/27 20:55:38 by emlava            #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/12/19 13:48:46 by elara-va         ###   ########.fr       */
+=======
+/*   Updated: 2025/12/20 19:43:29 by elara-va         ###   ########.fr       */
+>>>>>>> f264050 (.)
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +25,12 @@ void	*start_routine(void *arg)
 	resources = (t_resources*)arg;
 	pthread_mutex_lock(&resources->philo_nbr_lock);
 	philosopher = ++resources->philo_nbr;
-	//
-	printf("Philosopher %d exists\n", philosopher);
-	//
 	pthread_mutex_unlock(&resources->philo_nbr_lock);
+	if (resources->nbr_of_meals == -1)
+	{
+		// Function that runs the loop and has a check of stop_flag before every printing of state
+		// If the flag is 1, the thread returns;
+	}
 	//
 	print_state_change(resources->initial_time, philosopher, D, &resources->print_lock);
 	//
@@ -44,8 +50,10 @@ int	manage_philosophers(t_resources *resources, t_philosophers *philosophers)
 	created_philos = 0;
 	resources->philo_nbr = 0;
 	curr_philosopher = philosophers;
-	gettimeofday(&resources->initial_time, NULL);
+	resources->death_flag = 0;
+	resources->stop_flag = 0;
 	return_value = 1;
+	gettimeofday(&resources->initial_time, NULL);
 	while (created_philos++ < resources->requested_philos)
 	{
 		if (pthread_create(&curr_philosopher->thread, NULL, start_routine, resources) != 0)
@@ -55,6 +63,10 @@ int	manage_philosophers(t_resources *resources, t_philosophers *philosophers)
 		}
 		curr_philosopher = curr_philosopher->next;
 	}
+	while (!resources->death_flag)
+		;	
+	resources->stop_flag = 0;
+	// Here's the cleanup
 	curr_philosopher = philosophers;
 	if (return_value == 1)
 	{

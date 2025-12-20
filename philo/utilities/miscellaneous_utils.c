@@ -6,7 +6,11 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 16:11:46 by elara-va          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/12/19 13:57:25 by elara-va         ###   ########.fr       */
+=======
+/*   Updated: 2025/12/20 19:43:42 by elara-va         ###   ########.fr       */
+>>>>>>> f264050 (.)
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +65,6 @@ void	print_state_change(struct timeval initial_time, int philosopher, char *new_
 {
 	struct timeval	current_time;
 
-	// Add check to lock mutex in case the current philosopher has died
 	gettimeofday(&current_time, NULL);
 	printf("%ldms %d %s\n", time_stamp_ms(initial_time, current_time), philosopher, new_state);
 	return ;
