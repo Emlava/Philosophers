@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/21 18:00:24 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/21 19:47:08 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ typedef struct s_resources
 	pthread_mutex_t print_lock;
 	int				philo_nbr;
 	struct timeval	initial_time;
-	int				death_flag;
+	int				all_meals_or_death_flag;
 	int				stop_flag;
 }	t_resources;
 
@@ -55,10 +55,14 @@ int		allocate_philos_list(t_philosophers **philosophers, int requested_philos);
 
 /**** utilities/miscellaneous_utils.c ****/
 int		ft_atoi(const char *nptr);
-void	print_state_change(struct timeval initial_time, int philosopher, char *new_state, pthread_mutex_t *print_lock);
+int		print_state_change(struct timeval initial_time, int philosopher, char *new_state, pthread_mutex_t *print_lock);
 
 /**** utilities/cleaning_utils.c ****/
 void	destroy_forks(pthread_mutex_t *forks, int nbr_of_forks);
 void	free_philos_list(t_philosophers *philosophers);
+
+/**** routines.c ****/
+void	*monitor_routine(void *arg);
+void	*philosophers_routine(void *arg);
 
 #endif

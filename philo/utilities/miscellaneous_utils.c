@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:23 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/21 18:01:26 by elara-va         ###   ########.fr       */
+/*   Updated: 2025/12/21 20:17:30 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,25 @@ static long	time_stamp_ms(struct timeval initial_time, struct timeval current_ti
 	return ((long)((current_microseconds - initial_microseconds) / 1000));
 }
 
-void	print_state_change(struct timeval initial_time, int philosopher, char *new_state, pthread_mutex_t *print_lock)
+int	print_state_change(t_resources *resources, int philosopher, char *new_state)
 {
-	struct timeval	current_time;
+	struct timeval			current_time;
+	static struct timeval	previous_time;
 
+	pthread_mutex_lock(&resources->print_lock);
+	if (resources->stop_flag == 1)
+	{
+		pthread_mutex_unlock(&resources->print_lock);
+		return (0);
+	}
 	gettimeofday(&current_time, NULL);
-	printf("%ldms %d %s\n", time_stamp_ms(initial_time, current_time), philosopher, new_state);
-	return ;
+	// WE LEFT OFF HERE
+	// Here we check that time_to_die has not passed since the initial time or the timestamp of the last meal.
+	// previous_time has to be equal to initial time if the first meal has not been had
+	// or to current_time (below) if it has.
+	// If time_to_die has passed, we assign 1 to all_meals_or_death_flag and print the death
+	printf("%ldms %d %s\n", time_stamp_ms(resources->initial_time, current_time), philosopher, new_state);
+	previous_time = current_time;
+	pthread_mutex_unlock(&resources->print_lock);
+	return (1);
 }
