@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 15:55:58 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/18 16:11:42 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/03 20:03:00 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,28 +72,30 @@ int	create_locks(t_resources *resources)
 	return (return_value);
 }
 
-int	allocate_philos_list(t_philosophers **philosophers, int requested_philos)
+int	allocate_philos_list(t_philosopher_list **philosopher_list, int requested_philos)
 {
-	t_philosophers	*philosophers_cpy;
+	t_philosopher_list	*philosopher_list_cpy;
 	int	i;
 
-	*philosophers = malloc(sizeof(t_philosophers));
-	if (!(*philosophers))
+	*philosopher_list = malloc(sizeof(t_philosopher_list));
+	if (!(*philosopher_list))
 		return (0);
-	(*philosophers)->next = NULL;
-	philosophers_cpy = *philosophers;
+	(*philosopher_list)->next = NULL;
+	(*philosopher_list)->prev_meal_or_initial_ts.tv_sec = -1;
+	philosopher_list_cpy = *philosopher_list;
 	i = 1;
 	while (i++ < requested_philos)
 	{
-		philosophers_cpy->next = malloc(sizeof(t_philosophers));
-		if (!philosophers_cpy->next)
+		philosopher_list_cpy->next = malloc(sizeof(t_philosopher_list));
+		if (!philosopher_list_cpy->next)
 		{
-			philosophers_cpy->next = NULL;
-			free_philos_list(*philosophers);	
+			philosopher_list_cpy->next = NULL;
+			free_philos_list(*philosopher_list);	
 			return (0);
 		}
-		philosophers_cpy = philosophers_cpy->next;
+		philosopher_list_cpy = philosopher_list_cpy->next;
+		philosopher_list_cpy->prev_meal_or_initial_ts.tv_sec = -1;
 	}
-	philosophers_cpy->next = NULL;
+	philosopher_list_cpy->next = NULL;
 	return (1);
 }

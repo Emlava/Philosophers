@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:23 by elara-va          #+#    #+#             */
-/*   Updated: 2025/12/21 20:17:30 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/03 21:17:42 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,35 +47,31 @@ int	ft_atoi(const char *nptr)
 	return ((int)result);
 }
 
-static long	time_stamp_ms(struct timeval initial_time, struct timeval current_time)
+long	get_time_interval_ms(struct timeval first_ts, struct timeval second_ts)
 {
-	long long	initial_microseconds;
-	long long	current_microseconds;
+	long long	first_ts_in_ms;
+	long long	second_ts_in_ms;
 
-	initial_microseconds = (initial_time.tv_sec * 1000000) + initial_time.tv_usec;
-	current_microseconds = (current_time.tv_sec * 1000000) + current_time.tv_usec;
-	return ((long)((current_microseconds - initial_microseconds) / 1000));
+	first_ts_in_ms = (first_ts.tv_sec * 1000000) + first_ts.tv_usec;
+	second_ts_in_ms = (second_ts.tv_sec * 1000000) + second_ts.tv_usec;
+	return ((long)((second_ts_in_ms - first_ts_in_ms) / 1000));
 }
 
-int	print_state_change(t_resources *resources, int philosopher, char *new_state)
+int	print_state_change(t_resources *resources, int philosopher, char *new_state,
+	t_philosopher_list *curr_philo_node)
 {
 	struct timeval			current_time;
-	static struct timeval	previous_time;
 
 	pthread_mutex_lock(&resources->print_lock);
+	gettimeofday(&current_time, NULL);
+	if (new_state == E)
+		curr_philo_node->prev_meal_or_initial_ts = current_time;
 	if (resources->stop_flag == 1)
 	{
 		pthread_mutex_unlock(&resources->print_lock);
 		return (0);
 	}
-	gettimeofday(&current_time, NULL);
-	// WE LEFT OFF HERE
-	// Here we check that time_to_die has not passed since the initial time or the timestamp of the last meal.
-	// previous_time has to be equal to initial time if the first meal has not been had
-	// or to current_time (below) if it has.
-	// If time_to_die has passed, we assign 1 to all_meals_or_death_flag and print the death
-	printf("%ldms %d %s\n", time_stamp_ms(resources->initial_time, current_time), philosopher, new_state);
-	previous_time = current_time;
+	printf("%ldms %d %s\n", get_time_interval_ms(resources->initial_time, current_time), philosopher, new_state);
 	pthread_mutex_unlock(&resources->print_lock);
 	return (1);
 }
