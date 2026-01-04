@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/03 21:19:54 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/04 15:53:17 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,10 @@ void	*monitor_routine(void *arg)
 				get_time_interval_ms(resources->initial_time, current_time), curr_philo_node->philosopher);
 			break ;
 		}
+		if (curr_philo_node->next != NULL)
+			curr_philo_node = curr_philo_node->next;
+		else
+			curr_philo_node = resources->philosopher_list;
 	}
 	return (NULL);
 }
