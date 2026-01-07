@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/03 21:08:56 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/07 20:05:49 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_resources
 	struct timeval		initial_time;
 	int					error_creating_thread_flag;
 	int					stop_flag;
+	int					full_philos_flag;
 }	t_resources;
 
 typedef struct s_philosopher_list

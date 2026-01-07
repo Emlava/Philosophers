@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/04 15:53:17 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/07 20:19:34 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,10 @@ void	*monitor_routine(void *arg)
 		while (curr_philo_node->prev_meal_or_initial_ts.tv_sec == -1)
 		{
 			if (resources->error_creating_thread_flag)
+			{
+				resources->stop_flag = 1;
 				return (NULL) ;
+			}
 		}
 		gettimeofday(&current_time, NULL);
 		if (get_time_interval_ms(curr_philo_node->prev_meal_or_initial_ts, current_time)
@@ -73,8 +76,16 @@ void	*philosophers_routine(void *arg)
 	philosopher_node->prev_meal_or_initial_ts = resources->initial_time;
 	if (resources->nbr_of_meals == -1)
 	{
+		// START HERE, write do_tasks()
 		// Function that runs the loop and has a check of stop_flag before every printing of state
 		// If the flag is 1, the thread returns;
+	}
+	else
+	{
+		// Same function but each philosopher increments a meals_had variable (local to each thread)
+		// every time they eat. After a philosopher has had all his meals,
+		// he raises the full_philos_flag (but keeps running).
+		// When full_philos_flag is equal to requested_philos, the monitor raises stop_flag.
 	}
 	
 	return (NULL);
