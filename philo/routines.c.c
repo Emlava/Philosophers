@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/07 20:19:34 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/08 16:59:16 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,18 @@ void	*monitor_routine(void *arg)
 }
 
 // Here goes the loop function
-void	do_tasks(t_resources resources, int philosopher)
+static void	do_tasks(t_resources *resources, t_philosopher_list *philosopher_node)
 {
-		
+	int	meals_had;
+	
+	meals_had = 0;
+	// START HERE
+	while (resources->stop_flag == 0)
+	{
 	// Eating
 	// Thinking
 	// Sleeping
+	}
 }
 
 void	*philosophers_routine(void *arg)
@@ -75,11 +81,7 @@ void	*philosophers_routine(void *arg)
 	philosopher_node->philosopher = philosopher_nbr;
 	philosopher_node->prev_meal_or_initial_ts = resources->initial_time;
 	if (resources->nbr_of_meals == -1)
-	{
-		// START HERE, write do_tasks()
-		// Function that runs the loop and has a check of stop_flag before every printing of state
-		// If the flag is 1, the thread returns;
-	}
+		do_tasks(resources, philosopher_node);
 	else
 	{
 		// Same function but each philosopher increments a meals_had variable (local to each thread)
