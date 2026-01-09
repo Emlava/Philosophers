@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:23 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/09 13:37:38 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/09 19:22:14 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,24 @@ long	get_time_interval_ms(struct timeval first_ts, struct timeval second_ts)
 	return ((long)((second_ts_in_ms - first_ts_in_ms) / 1000));
 }
 
+static int	philo_strcmp(const char *s1, const char *s2)
+{
+	const char	*p1;
+	const char	*p2;
+
+	p1 = s1;
+	p2 = s2;
+	while (*p1 && *p1 == *p2)
+	{
+		p1++;
+		p2++;
+	}
+	if (!*p1 && !*p2)
+		return (1);
+	else
+		return (0);
+}
+
 int	print_state_change(t_resources *resources, char *new_state,
 	t_philosopher_list *philosopher_node)
 {
@@ -66,7 +84,7 @@ int	print_state_change(t_resources *resources, char *new_state,
 		return (0);
 	pthread_mutex_lock(&resources->print_lock);
 	gettimeofday(&current_time, NULL);
-	if (new_state == E)
+	if (philo_strcmp(new_state, E) == 1)
 		philosopher_node->prev_meal_or_initial_ts = current_time;
 	if (resources->stop_flag == 1)
 	{

@@ -6,13 +6,12 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/06 18:12:19 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/03 20:03:00 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/09 18:38:16 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
 
-// The mutexes must be unlocked
 void	destroy_forks(pthread_mutex_t *forks, int nbr_of_forks)
 {
 	int	i;

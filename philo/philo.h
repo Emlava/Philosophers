@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/09 13:40:10 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/09 18:41:55 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,14 @@
 # include <stdarg.h>
 # include <sys/time.h>
 # include <pthread.h>
+
+typedef struct s_philosopher_list
+{
+	pthread_t					thread;
+	int							philosopher;
+	struct timeval				prev_meal_or_initial_ts;
+	struct s_philosopher_list	*next;
+}	t_philosopher_list;
 
 typedef struct s_resources
 {
@@ -41,14 +49,6 @@ typedef struct s_resources
 	int					stop_flag;
 	int					full_philos_flag;
 }	t_resources;
-
-typedef struct s_philosopher_list
-{
-	pthread_t					thread;
-	int							philosopher;
-	struct timeval				prev_meal_or_initial_ts;
-	struct s_philosopher_list	*next;
-}	t_philosopher_list;
 
 /**** utilities/setup_utils.c ****/
 int		convert_args_to_int(char *av[], t_resources *resources, int ac);
