@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/07 20:05:49 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/09 13:40:10 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,9 @@ int		allocate_philos_list(t_philosopher_list **philosopher_list, int requested_p
 
 /**** utilities/miscellaneous_utils.c ****/
 int		ft_atoi(const char *nptr);
-long	get_time_interval_ms(struct timeval initial_time, struct timeval current_time);
-int		print_state_change(t_resources *resources, int philosopher, char *new_state,
-			t_philosopher_list *curr_philo_node);
+long	get_time_interval_ms(struct timeval first_ts, struct timeval second_ts);
+int		print_state_change(t_resources *resources, char *new_state,
+			t_philosopher_list *philosopher_node);
 
 /**** utilities/cleaning_utils.c ****/
 void	destroy_forks(pthread_mutex_t *forks, int nbr_of_forks);

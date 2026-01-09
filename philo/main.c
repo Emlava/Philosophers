@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:28 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/03 21:09:45 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/09 13:11:16 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,8 @@ int main(int ac, char *av[])
 	}
 	if (!convert_args_to_int(av, &resources, ac))
 		return (2);
+	if (resources.nbr_of_meals == 0)
+		return (0);
 	if (!create_forks(&resources))
 		return (3);
 	if (!create_locks(&resources))

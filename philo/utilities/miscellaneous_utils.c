@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:23 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/03 21:17:42 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/09 13:37:38 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,21 +57,24 @@ long	get_time_interval_ms(struct timeval first_ts, struct timeval second_ts)
 	return ((long)((second_ts_in_ms - first_ts_in_ms) / 1000));
 }
 
-int	print_state_change(t_resources *resources, int philosopher, char *new_state,
-	t_philosopher_list *curr_philo_node)
+int	print_state_change(t_resources *resources, char *new_state,
+	t_philosopher_list *philosopher_node)
 {
 	struct timeval			current_time;
 
+	if (resources->stop_flag == 1) // Is this necessary here as well?
+		return (0);
 	pthread_mutex_lock(&resources->print_lock);
 	gettimeofday(&current_time, NULL);
 	if (new_state == E)
-		curr_philo_node->prev_meal_or_initial_ts = current_time;
+		philosopher_node->prev_meal_or_initial_ts = current_time;
 	if (resources->stop_flag == 1)
 	{
 		pthread_mutex_unlock(&resources->print_lock);
 		return (0);
 	}
-	printf("%ldms %d %s\n", get_time_interval_ms(resources->initial_time, current_time), philosopher, new_state);
+	printf("%ldms %d %s\n", get_time_interval_ms(resources->initial_time, current_time), 
+		philosopher_node->philosopher, new_state);
 	pthread_mutex_unlock(&resources->print_lock);
 	return (1);
 }

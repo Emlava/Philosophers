@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/08 16:59:16 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/09 14:34:07 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,18 @@ void	*monitor_routine(void *arg)
 		}
 		gettimeofday(&current_time, NULL);
 		if (get_time_interval_ms(curr_philo_node->prev_meal_or_initial_ts, current_time)
-			>= resources->time_to_die) // Or all meals have been had
+			>= resources->time_to_die)
 		{
 			resources->stop_flag = 1;
-			// Locking print_lock might delay the printing of a death, I believe
+			pthread_mutex_lock(&resources->print_lock);
 			printf("%ldms %d died\n",
 				get_time_interval_ms(resources->initial_time, current_time), curr_philo_node->philosopher);
+			pthread_mutex_unlock(&resources->print_lock);
+			break ;
+		}
+		if (resources->full_philos_flag == resources->nbr_of_meals)
+		{
+			resources->stop_flag = 1;
 			break ;
 		}
 		if (curr_philo_node->next != NULL)
@@ -48,19 +54,54 @@ void	*monitor_routine(void *arg)
 	return (NULL);
 }
 
-// Here goes the loop function
 static void	do_tasks(t_resources *resources, t_philosopher_list *philosopher_node)
 {
-	int	meals_had;
+	int				meals_had;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*right_fork;
+	struct timeval	curr_time;
 	
 	meals_had = 0;
-	// START HERE
-	while (resources->stop_flag == 0)
+	if (philosopher_node->philosopher == 1)
+		left_fork = &resources->forks[resources->requested_philos - 1];
+	else if (philosopher_node->philosopher == resources->requested_philos)
+		right_fork = &resources->forks[0];
+	if (philosopher_node->philosopher > 1)
+		left_fork = &resources->forks[philosopher_node->philosopher - 2];
+	if (philosopher_node->philosopher < resources->requested_philos)
+		right_fork = &resources->forks[philosopher_node->philosopher - 1];
+
+	while (1)
 	{
-	// Eating
-	// Thinking
-	// Sleeping
+		// Eating
+		// Check if there can be a deadlock with the forks
+		pthread_mutex_lock(left_fork);
+		if (!print_state_change(resources, TF, philosopher_node))
+			break ;
+		pthread_mutex_lock(right_fork);
+		if (!print_state_change(resources, TF, philosopher_node))
+			break ;
+		if (!print_state_change(resources, E, philosopher_node))
+			break ;
+		meals_had++;
+		if (meals_had == resources->nbr_of_meals)
+			resources->full_philos_flag++;
+		gettimeofday(&curr_time, NULL);
+		while (get_time_interval_ms(philosopher_node->prev_meal_or_initial_ts, curr_time) < resources->time_to_eat)
+			gettimeofday(&curr_time, NULL);
+		pthread_mutex_unlock(left_fork);
+		pthread_mutex_unlock(right_fork);
+		
+		// Sleeping
+		if (!print_state_change(resources, S, philosopher_node))
+			break ;
+		usleep(resources->time_to_sleep * 1000);
+
+		// Thinking
+		if (!print_state_change(resources, T, philosopher_node))
+			break ;
 	}
+	return ;
 }
 
 void	*philosophers_routine(void *arg)
@@ -80,15 +121,6 @@ void	*philosophers_routine(void *arg)
 		philosopher_node = philosopher_node->next;
 	philosopher_node->philosopher = philosopher_nbr;
 	philosopher_node->prev_meal_or_initial_ts = resources->initial_time;
-	if (resources->nbr_of_meals == -1)
-		do_tasks(resources, philosopher_node);
-	else
-	{
-		// Same function but each philosopher increments a meals_had variable (local to each thread)
-		// every time they eat. After a philosopher has had all his meals,
-		// he raises the full_philos_flag (but keeps running).
-		// When full_philos_flag is equal to requested_philos, the monitor raises stop_flag.
-	}
-	
+	do_tasks(resources, philosopher_node);
 	return (NULL);
 }
