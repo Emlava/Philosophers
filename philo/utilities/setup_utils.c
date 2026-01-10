@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 15:55:58 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/09 12:17:27 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/10 19:30:08 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,42 @@ int	convert_args_to_int(char *av[], t_resources *resources, int ac)
 		return (1);
 }
 
+int	allocate_philos_list(t_philosopher_list **philosopher_list, int requested_philos)
+{
+	int					return_value;
+	int					i;
+	t_philosopher_list	*philosopher_list_cpy;
+
+	return_value = 1;
+	i = 1;
+	*philosopher_list = malloc(sizeof(t_philosopher_list));
+	if (!(*philosopher_list))
+		return (0);
+	philosopher_list_cpy = *philosopher_list;
+	(*philosopher_list)->prev_meal_or_initial_ts.tv_sec = -1;
+	if (pthread_mutex_init(&(*philosopher_list)->pmits_lock, NULL) != 0)
+		return_value = 0;
+	while (i++ < requested_philos && return_value == 1)
+	{
+		philosopher_list_cpy->next = malloc(sizeof(t_philosopher_list));
+		if (!philosopher_list_cpy->next)
+		{
+			return_value = 0;
+			break ;
+		}
+		philosopher_list_cpy = philosopher_list_cpy->next;
+		philosopher_list_cpy->prev_meal_or_initial_ts.tv_sec = -1;
+		if (pthread_mutex_init(&philosopher_list_cpy->pmits_lock, NULL) != 0)
+			return_value = 0;
+	}
+	philosopher_list_cpy->next = NULL;
+	if (!return_value)
+	{
+		free_philos_list(*philosopher_list);	
+	}
+	return (return_value);
+}
+
 int	create_forks(t_resources *resources)
 {
 	int	i;
@@ -44,6 +80,7 @@ int	create_forks(t_resources *resources)
 	{
 		if (pthread_mutex_init(&resources->forks[i], NULL) != 0)
 		{
+			free_philos_list(resources->philosopher_list);
 			destroy_forks(resources->forks, i);
 			return (0);
 		}
@@ -54,48 +91,29 @@ int	create_forks(t_resources *resources)
 
 int	create_locks(t_resources *resources)
 {
-	int	return_value;
+	pthread_mutex_t		*lock_arr[5];
+	int					i;
 
-	return_value = 1;
-	if (pthread_mutex_init(&resources->philo_nbr_lock, NULL) != 0)
-		return_value = 0;
-	if (return_value != 0)
+	lock_arr[0] = &resources->philo_nbr_lock;
+	lock_arr[1] = &resources->print_lock;
+	lock_arr[2] = &resources->ect_flag_lock;
+	lock_arr[3] = &resources->stop_flag_lock;
+	lock_arr[4] = &resources->fp_flag_lock;
+	i = 0;
+	while (i <= 4)
 	{
-		if (pthread_mutex_init(&resources->print_lock, NULL) != 0)
-		{
-			return_value = 0;
-			pthread_mutex_destroy(&resources->philo_nbr_lock);
-		}
+		if (pthread_mutex_init(lock_arr[i], NULL) != 0)
+			break ;
+		i++;
 	}
-	if (return_value == 0)
+	if (i == 5)
+		return (1);
+	else
+	{
+		free_philos_list(resources->philosopher_list);
 		destroy_forks(resources->forks, resources->requested_philos);
-	return (return_value);
-}
-
-int	allocate_philos_list(t_philosopher_list **philosopher_list, int requested_philos)
-{
-	t_philosopher_list	*philosopher_list_cpy;
-	int	i;
-
-	*philosopher_list = malloc(sizeof(t_philosopher_list));
-	if (!(*philosopher_list))
+		while (i--)
+			pthread_mutex_destroy(lock_arr[i]);
 		return (0);
-	(*philosopher_list)->next = NULL;
-	(*philosopher_list)->prev_meal_or_initial_ts.tv_sec = -1;
-	philosopher_list_cpy = *philosopher_list;
-	i = 1;
-	while (i++ < requested_philos)
-	{
-		philosopher_list_cpy->next = malloc(sizeof(t_philosopher_list));
-		if (!philosopher_list_cpy->next)
-		{
-			philosopher_list_cpy->next = NULL;
-			free_philos_list(*philosopher_list);	
-			return (0);
-		}
-		philosopher_list_cpy = philosopher_list_cpy->next;
-		philosopher_list_cpy->prev_meal_or_initial_ts.tv_sec = -1;
 	}
-	philosopher_list_cpy->next = NULL;
-	return (1);
 }

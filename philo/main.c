@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:28 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/10 17:03:44 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/10 18:05:09 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,9 @@ static int	manage_philosopher_list(t_resources *resources)
 	destroy_forks(resources->forks, resources->requested_philos);
 	pthread_mutex_destroy(&resources->philo_nbr_lock);
 	pthread_mutex_destroy(&resources->print_lock);
+	pthread_mutex_destroy(&resources->ect_flag_lock);
+	pthread_mutex_destroy(&resources->stop_flag_lock);
+	pthread_mutex_destroy(&resources->fp_flag_lock);
 	return (return_value);
 }
 
@@ -81,18 +84,12 @@ int main(int ac, char *av[])
 		return (2);
 	if (resources.nbr_of_meals == 0)
 		return (0);
-	if (!create_forks(&resources))
-		return (3);
-	if (!create_locks(&resources))
-		return (4);
 	if (!allocate_philos_list(&resources.philosopher_list, resources.requested_philos))
-	{
-		// Find a way to destroy the forks and locks inside the called function
-		destroy_forks(resources.forks, resources.requested_philos);
-		pthread_mutex_destroy(&resources.philo_nbr_lock);
-		pthread_mutex_destroy(&resources.print_lock);
+		return (3);
+	if (!create_forks(&resources))
+		return (4);
+	if (!create_locks(&resources))
 		return (5);
-	}
 	if (!manage_philosopher_list(&resources))
 	{
 		write(2, "Failed to create thread\n", 24);
