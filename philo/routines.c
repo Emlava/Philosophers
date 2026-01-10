@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   routines.c.c                                       :+:      :+:    :+:   */
+/*   routines.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/09 14:34:07 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/10 16:45:27 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ static void	do_tasks(t_resources *resources, t_philosopher_list *philosopher_nod
 	struct timeval	curr_time;
 	
 	meals_had = 0;
-	if (philosopher_node->philosopher == 1)
+	if (philosopher_node->philosopher == 1 && resources->requested_philos != 1)
 		left_fork = &resources->forks[resources->requested_philos - 1];
 	else if (philosopher_node->philosopher == resources->requested_philos)
 		right_fork = &resources->forks[0];
@@ -71,10 +71,18 @@ static void	do_tasks(t_resources *resources, t_philosopher_list *philosopher_nod
 	if (philosopher_node->philosopher < resources->requested_philos)
 		right_fork = &resources->forks[philosopher_node->philosopher - 1];
 
+	if (resources->requested_philos == 1)
+	{
+		pthread_mutex_lock(right_fork);
+		print_state_change(resources, TF, philosopher_node);
+		while (resources->stop_flag != 1)
+			usleep(2000);
+		return ;
+	}
+
 	while (1)
 	{
 		// Eating
-		// Check if there can be a deadlock with the forks
 		pthread_mutex_lock(left_fork);
 		if (!print_state_change(resources, TF, philosopher_node))
 			break ;

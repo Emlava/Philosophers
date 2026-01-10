@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:28 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/09 19:41:58 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/10 17:03:44 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@ static int	manage_philosopher_list(t_resources *resources)
 	t_philosopher_list	*curr_philo_node;
 	int					return_value;
 	pthread_t			monitor;
+	int					threads_to_join;
 	
 	created_philos = 0;
 	resources->seat_nbr = 0;
 	curr_philo_node = resources->philosopher_list;
 	resources->error_creating_thread_flag = 0;
 	resources->stop_flag = 0;
+	resources->full_philos_flag = 0;
 	return_value = 1;
 	gettimeofday(&resources->initial_time, NULL);
 	if (pthread_create(&monitor, NULL, monitor_routine, resources) != 0)
@@ -40,10 +42,11 @@ static int	manage_philosopher_list(t_resources *resources)
 	}
 
 	// Here's the cleanup
+	threads_to_join = resources->requested_philos;
 	curr_philo_node = resources->philosopher_list;
 	if (return_value == 1)
 	{
-		while (resources->requested_philos--)
+		while (threads_to_join--)
 		{
 			pthread_join(curr_philo_node->thread, NULL);
 			curr_philo_node = curr_philo_node->next;
