@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:28 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/10 18:05:09 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/11 14:32:09 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,9 @@ static int	manage_philosopher_list(t_resources *resources)
 	{
 		if (pthread_create(&curr_philo_node->thread, NULL, philosophers_routine, resources) != 0)
 		{
+			pthread_mutex_lock(&resources->ect_flag_lock);
 			resources->error_creating_thread_flag = 1;
+			pthread_mutex_unlock(&resources->ect_flag_lock);
 			pthread_detach(monitor);
 			return_value = 0;
 		}

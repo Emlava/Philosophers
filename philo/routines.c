@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/10 16:45:27 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/11 16:16:48 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,30 +22,47 @@ void	*monitor_routine(void *arg)
 	curr_philo_node = resources->philosopher_list;
 	while (1)
 	{
-		while (curr_philo_node->prev_meal_or_initial_ts.tv_sec == -1)
+		while (!pthread_mutex_lock(&curr_philo_node->pmits_lock) && curr_philo_node->prev_meal_or_initial_ts.tv_sec == -1)
 		{
+			pthread_mutex_unlock(&curr_philo_node->pmits_lock);
+			pthread_mutex_lock(&resources->ect_flag_lock);
 			if (resources->error_creating_thread_flag)
 			{
+				pthread_mutex_unlock(&resources->ect_flag_lock);
+				pthread_mutex_lock(&resources->stop_flag_lock);
 				resources->stop_flag = 1;
+				pthread_mutex_unlock(&resources->stop_flag_lock);
 				return (NULL) ;
 			}
+			pthread_mutex_unlock(&resources->ect_flag_lock);
 		}
+		// We don't unlock pmits_lock here because it's used in the next
+		// if statement
 		gettimeofday(&current_time, NULL);
 		if (get_time_interval_ms(curr_philo_node->prev_meal_or_initial_ts, current_time)
 			>= resources->time_to_die)
 		{
+			pthread_mutex_unlock(&curr_philo_node->pmits_lock);
+			pthread_mutex_lock(&resources->stop_flag_lock);
 			resources->stop_flag = 1;
+			pthread_mutex_unlock(&resources->stop_flag_lock);
 			pthread_mutex_lock(&resources->print_lock);
 			printf("%ldms %d died\n",
 				get_time_interval_ms(resources->initial_time, current_time), curr_philo_node->philosopher);
 			pthread_mutex_unlock(&resources->print_lock);
 			break ;
 		}
+		pthread_mutex_unlock(&curr_philo_node->pmits_lock);
+		pthread_mutex_lock(&resources->fp_flag_lock);
 		if (resources->full_philos_flag == resources->nbr_of_meals)
 		{
+			pthread_mutex_lock(&resources->stop_flag_lock);
 			resources->stop_flag = 1;
+			pthread_mutex_unlock(&resources->stop_flag_lock);
+			pthread_mutex_unlock(&resources->fp_flag_lock);
 			break ;
 		}
+		pthread_mutex_unlock(&resources->fp_flag_lock);
 		if (curr_philo_node->next != NULL)
 			curr_philo_node = curr_philo_node->next;
 		else
@@ -75,8 +92,12 @@ static void	do_tasks(t_resources *resources, t_philosopher_list *philosopher_nod
 	{
 		pthread_mutex_lock(right_fork);
 		print_state_change(resources, TF, philosopher_node);
-		while (resources->stop_flag != 1)
+		while (!pthread_mutex_lock(&resources->stop_flag_lock) && resources->stop_flag != 1)
+		{
+			pthread_mutex_unlock(&resources->stop_flag_lock);
 			usleep(2000);
+		}
+		pthread_mutex_unlock(&resources->stop_flag_lock);
 		return ;
 	}
 
@@ -85,18 +106,38 @@ static void	do_tasks(t_resources *resources, t_philosopher_list *philosopher_nod
 		// Eating
 		pthread_mutex_lock(left_fork);
 		if (!print_state_change(resources, TF, philosopher_node))
+		{
+			pthread_mutex_unlock(left_fork);
 			break ;
+		}
 		pthread_mutex_lock(right_fork);
 		if (!print_state_change(resources, TF, philosopher_node))
+		{
+			pthread_mutex_unlock(left_fork);
+			pthread_mutex_unlock(right_fork);
 			break ;
+		}
 		if (!print_state_change(resources, E, philosopher_node))
+		{
+			pthread_mutex_unlock(left_fork);
+			pthread_mutex_unlock(right_fork);
 			break ;
+		}
 		meals_had++;
 		if (meals_had == resources->nbr_of_meals)
+		{
+			pthread_mutex_lock(&resources->fp_flag_lock);
 			resources->full_philos_flag++;
+			pthread_mutex_unlock(&resources->fp_flag_lock);
+		}
 		gettimeofday(&curr_time, NULL);
-		while (get_time_interval_ms(philosopher_node->prev_meal_or_initial_ts, curr_time) < resources->time_to_eat)
+		while (!pthread_mutex_lock(&philosopher_node->pmits_lock)
+			&& get_time_interval_ms(philosopher_node->prev_meal_or_initial_ts, curr_time) < resources->time_to_eat)
+		{
+			pthread_mutex_unlock(&philosopher_node->pmits_lock);
 			gettimeofday(&curr_time, NULL);
+		}
+		pthread_mutex_unlock(&philosopher_node->pmits_lock);
 		pthread_mutex_unlock(left_fork);
 		pthread_mutex_unlock(right_fork);
 		
@@ -109,6 +150,9 @@ static void	do_tasks(t_resources *resources, t_philosopher_list *philosopher_nod
 		if (!print_state_change(resources, T, philosopher_node))
 			break ;
 	}
+	//
+	printf("Philosopher %d is leaving the chat properly\n", philosopher_node->philosopher);
+	//
 	return ;
 }
 
@@ -128,7 +172,9 @@ void	*philosophers_routine(void *arg)
 	while (++i != philosopher_nbr)
 		philosopher_node = philosopher_node->next;
 	philosopher_node->philosopher = philosopher_nbr;
+	pthread_mutex_lock(&philosopher_node->pmits_lock);
 	philosopher_node->prev_meal_or_initial_ts = resources->initial_time;
+	pthread_mutex_unlock(&philosopher_node->pmits_lock);
 	do_tasks(resources, philosopher_node);
 	return (NULL);
 }

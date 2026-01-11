@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:23 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/09 19:22:14 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/11 15:05:29 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,17 +80,22 @@ int	print_state_change(t_resources *resources, char *new_state,
 {
 	struct timeval			current_time;
 
-	if (resources->stop_flag == 1) // Is this necessary here as well?
-		return (0);
 	pthread_mutex_lock(&resources->print_lock);
 	gettimeofday(&current_time, NULL);
 	if (philo_strcmp(new_state, E) == 1)
+	{
+		pthread_mutex_lock(&philosopher_node->pmits_lock);
 		philosopher_node->prev_meal_or_initial_ts = current_time;
+		pthread_mutex_unlock(&philosopher_node->pmits_lock);
+	}
+	pthread_mutex_lock(&resources->stop_flag_lock);
 	if (resources->stop_flag == 1)
 	{
 		pthread_mutex_unlock(&resources->print_lock);
+		pthread_mutex_unlock(&resources->stop_flag_lock);
 		return (0);
 	}
+	pthread_mutex_unlock(&resources->stop_flag_lock);
 	printf("%ldms %d %s\n", get_time_interval_ms(resources->initial_time, current_time), 
 		philosopher_node->philosopher, new_state);
 	pthread_mutex_unlock(&resources->print_lock);

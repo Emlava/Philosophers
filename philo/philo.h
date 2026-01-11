@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/10 19:35:48 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/11 14:33:52 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ typedef struct s_resources
 	int					nbr_of_meals;
 	int					seat_nbr;
 	struct timeval		initial_time;
-	int					error_creating_thread_flag; // Protect
-	int					stop_flag; // Protect
-	int					full_philos_flag; // Protect
+	int					error_creating_thread_flag;
+	int					stop_flag;
+	int					full_philos_flag;
 	pthread_mutex_t	 	*forks;
 	pthread_mutex_t 	philo_nbr_lock;
 	pthread_mutex_t 	print_lock;
