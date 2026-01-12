@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:28 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/11 14:32:09 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/12 23:15:56 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,23 @@
 static int	manage_philosopher_list(t_resources *resources)
 {
 	int					created_philos;
-	t_philosopher_list	*curr_philo_node;
 	int					return_value;
 	pthread_t			monitor;
 	int					threads_to_join;
 	
 	created_philos = 0;
-	resources->seat_nbr = 0;
-	curr_philo_node = resources->philosopher_list;
+	resources->curr_philo_node = resources->philosopher_list;
+	resources->node_ready_flag = 0;
 	resources->error_creating_thread_flag = 0;
-	resources->stop_flag = 0;
 	resources->full_philos_flag = 0;
+	resources->stop_flag = 0;
 	return_value = 1;
 	gettimeofday(&resources->initial_time, NULL);
 	if (pthread_create(&monitor, NULL, monitor_routine, resources) != 0)
 		return_value = 0;
 	while (created_philos++ < resources->requested_philos && return_value == 1)
 	{
-		if (pthread_create(&curr_philo_node->thread, NULL, philosophers_routine, resources) != 0)
+		if (pthread_create(&resources->curr_philo_node->thread, NULL, philosophers_routine, resources) != 0)
 		{
 			pthread_mutex_lock(&resources->ect_flag_lock);
 			resources->error_creating_thread_flag = 1;
@@ -40,18 +39,30 @@ static int	manage_philosopher_list(t_resources *resources)
 			pthread_detach(monitor);
 			return_value = 0;
 		}
-		curr_philo_node = curr_philo_node->next;
+		// Wait for the current philo to indicate it already assigned the current node
+		// And then lower the flag
+		else
+		{
+			while (!pthread_mutex_lock(&resources->node_ready_flag_lock) && resources->node_ready_flag == 0)
+			{
+				pthread_mutex_unlock(&resources->node_ready_flag_lock);
+				usleep(1000);
+			}
+			resources->node_ready_flag = 0;
+			resources->curr_philo_node = resources->curr_philo_node->next;
+			pthread_mutex_unlock(&resources->node_ready_flag_lock);
+		}
 	}
 
 	// Here's the cleanup
 	threads_to_join = resources->requested_philos;
-	curr_philo_node = resources->philosopher_list;
+	resources->curr_philo_node = resources->philosopher_list;
 	if (return_value == 1)
 	{
 		while (threads_to_join--)
 		{
-			pthread_join(curr_philo_node->thread, NULL);
-			curr_philo_node = curr_philo_node->next;
+			pthread_join(resources->curr_philo_node->thread, NULL);
+			resources->curr_philo_node = resources->curr_philo_node->next;
 		}
 		pthread_join(monitor, NULL);
 	}
@@ -59,17 +70,17 @@ static int	manage_philosopher_list(t_resources *resources)
 	{
 		while (--created_philos)
 		{
-			pthread_detach(curr_philo_node->thread);
-			curr_philo_node = curr_philo_node->next;
+			pthread_detach(resources->curr_philo_node->thread);
+			resources->curr_philo_node = resources->curr_philo_node->next;
 		}
 	}
 	free_philos_list(resources->philosopher_list);
 	destroy_forks(resources->forks, resources->requested_philos);
-	pthread_mutex_destroy(&resources->philo_nbr_lock);
+	pthread_mutex_destroy(&resources->node_ready_flag_lock);
 	pthread_mutex_destroy(&resources->print_lock);
 	pthread_mutex_destroy(&resources->ect_flag_lock);
-	pthread_mutex_destroy(&resources->stop_flag_lock);
 	pthread_mutex_destroy(&resources->fp_flag_lock);
+	pthread_mutex_destroy(&resources->stop_flag_lock);
 	return (return_value);
 }
 

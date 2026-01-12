@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/11 14:33:52 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/12 22:58:14 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef struct s_philosopher_list
 {
 	pthread_t					thread;
 	int							philosopher;
-	struct timeval				prev_meal_or_initial_ts; // Protect
+	struct timeval				prev_meal_or_initial_ts;
 	pthread_mutex_t 			pmits_lock;
 	struct s_philosopher_list	*next;
 }	t_philosopher_list;
@@ -36,22 +36,23 @@ typedef struct s_philosopher_list
 typedef struct s_resources
 {
 	t_philosopher_list	*philosopher_list;
+	t_philosopher_list	*curr_philo_node;
 	int					requested_philos;
 	int					time_to_die;
 	int					time_to_eat;
 	int					time_to_sleep;
 	int					nbr_of_meals;
-	int					seat_nbr;
 	struct timeval		initial_time;
 	int					error_creating_thread_flag;
-	int					stop_flag;
+	int					node_ready_flag;
 	int					full_philos_flag;
+	int					stop_flag;
 	pthread_mutex_t	 	*forks;
-	pthread_mutex_t 	philo_nbr_lock;
+	pthread_mutex_t		node_ready_flag_lock;
 	pthread_mutex_t 	print_lock;
 	pthread_mutex_t		ect_flag_lock;
-	pthread_mutex_t		stop_flag_lock;
 	pthread_mutex_t		fp_flag_lock;
+	pthread_mutex_t		stop_flag_lock;
 }	t_resources;
 
 /**** utilities/setup_utils.c ****/

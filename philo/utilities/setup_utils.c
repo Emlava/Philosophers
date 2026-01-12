@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 15:55:58 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/10 19:30:08 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/12 22:24:52 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,11 @@ int	allocate_philos_list(t_philosopher_list **philosopher_list, int requested_ph
 	*philosopher_list = malloc(sizeof(t_philosopher_list));
 	if (!(*philosopher_list))
 		return (0);
-	philosopher_list_cpy = *philosopher_list;
+	(*philosopher_list)->philosopher = i;
 	(*philosopher_list)->prev_meal_or_initial_ts.tv_sec = -1;
 	if (pthread_mutex_init(&(*philosopher_list)->pmits_lock, NULL) != 0)
 		return_value = 0;
+	philosopher_list_cpy = *philosopher_list;
 	while (i++ < requested_philos && return_value == 1)
 	{
 		philosopher_list_cpy->next = malloc(sizeof(t_philosopher_list));
@@ -56,6 +57,7 @@ int	allocate_philos_list(t_philosopher_list **philosopher_list, int requested_ph
 			break ;
 		}
 		philosopher_list_cpy = philosopher_list_cpy->next;
+		philosopher_list_cpy->philosopher = i;
 		philosopher_list_cpy->prev_meal_or_initial_ts.tv_sec = -1;
 		if (pthread_mutex_init(&philosopher_list_cpy->pmits_lock, NULL) != 0)
 			return_value = 0;
@@ -94,11 +96,11 @@ int	create_locks(t_resources *resources)
 	pthread_mutex_t		*lock_arr[5];
 	int					i;
 
-	lock_arr[0] = &resources->philo_nbr_lock;
+	lock_arr[0] = &resources->node_ready_flag_lock;
 	lock_arr[1] = &resources->print_lock;
 	lock_arr[2] = &resources->ect_flag_lock;
-	lock_arr[3] = &resources->stop_flag_lock;
-	lock_arr[4] = &resources->fp_flag_lock;
+	lock_arr[3] = &resources->fp_flag_lock;
+	lock_arr[4] = &resources->stop_flag_lock;
 	i = 0;
 	while (i <= 4)
 	{

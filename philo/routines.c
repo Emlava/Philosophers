@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/11 16:16:48 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/12 23:16:32 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,28 +150,20 @@ static void	do_tasks(t_resources *resources, t_philosopher_list *philosopher_nod
 		if (!print_state_change(resources, T, philosopher_node))
 			break ;
 	}
-	//
-	printf("Philosopher %d is leaving the chat properly\n", philosopher_node->philosopher);
-	//
 	return ;
 }
 
 void	*philosophers_routine(void *arg)
 {
 	t_resources			*resources;
-	int					philosopher_nbr;
 	t_philosopher_list	*philosopher_node;
-	int					i;
 	
 	resources = (t_resources*)arg;
-	pthread_mutex_lock(&resources->philo_nbr_lock);
-	philosopher_nbr = ++resources->seat_nbr;
-	pthread_mutex_unlock(&resources->philo_nbr_lock);
 	philosopher_node = resources->philosopher_list;
-	i = 0;
-	while (++i != philosopher_nbr)
-		philosopher_node = philosopher_node->next;
-	philosopher_node->philosopher = philosopher_nbr;
+	pthread_mutex_lock(&resources->node_ready_flag_lock);
+	philosopher_node = resources->curr_philo_node;
+	resources->node_ready_flag = 1;
+	pthread_mutex_unlock(&resources->node_ready_flag_lock);
 	pthread_mutex_lock(&philosopher_node->pmits_lock);
 	philosopher_node->prev_meal_or_initial_ts = resources->initial_time;
 	pthread_mutex_unlock(&philosopher_node->pmits_lock);
