@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/12 22:58:14 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/13 22:21:34 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,27 @@ typedef struct s_resources
 	int					time_to_eat;
 	int					time_to_sleep;
 	int					nbr_of_meals;
-	struct timeval		initial_time;
+	int					odd_philos;
+	int					even_philos;
+	int					odds_meal_count;
+	int					evens_meal_count;
 	int					error_creating_thread_flag;
 	int					node_ready_flag;
+	int					start_simulation_flag;
+	int					odds_eat_flag;
+	int					evens_eat_flag;
 	int					full_philos_flag;
 	int					stop_flag;
+	struct timeval		initial_time;
 	pthread_mutex_t	 	*forks;
-	pthread_mutex_t		node_ready_flag_lock;
-	pthread_mutex_t 	print_lock;
 	pthread_mutex_t		ect_flag_lock;
+	pthread_mutex_t		node_ready_flag_lock;
+	pthread_mutex_t		start_simulation_flag_lock;
+	pthread_mutex_t	 	odds_meal_count_lock;
+	pthread_mutex_t	 	evens_meal_count_lock;
+	pthread_mutex_t		odds_eat_flag_lock;
+	pthread_mutex_t		evens_eat_flag_lock;
+	pthread_mutex_t 	print_lock;
 	pthread_mutex_t		fp_flag_lock;
 	pthread_mutex_t		stop_flag_lock;
 }	t_resources;

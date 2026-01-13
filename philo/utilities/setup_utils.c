@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 15:55:58 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/12 22:24:52 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/13 22:22:13 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int	allocate_philos_list(t_philosopher_list **philosopher_list, int requested_ph
 
 	return_value = 1;
 	i = 1;
+	// Make function allocate_node() and use it here and inside the loop
 	*philosopher_list = malloc(sizeof(t_philosopher_list));
 	if (!(*philosopher_list))
 		return (0);
@@ -93,22 +94,27 @@ int	create_forks(t_resources *resources)
 
 int	create_locks(t_resources *resources)
 {
-	pthread_mutex_t		*lock_arr[5];
+	pthread_mutex_t		*lock_arr[10];
 	int					i;
 
-	lock_arr[0] = &resources->node_ready_flag_lock;
-	lock_arr[1] = &resources->print_lock;
-	lock_arr[2] = &resources->ect_flag_lock;
-	lock_arr[3] = &resources->fp_flag_lock;
-	lock_arr[4] = &resources->stop_flag_lock;
+	lock_arr[0] = &resources->ect_flag_lock;
+	lock_arr[1] = &resources->node_ready_flag_lock;
+	lock_arr[2] = &resources->start_simulation_flag_lock;
+	lock_arr[3] = &resources->odds_meal_count_lock;
+	lock_arr[4] = &resources->evens_meal_count_lock;
+	lock_arr[5] = &resources->odds_eat_flag_lock;
+	lock_arr[6] = &resources->evens_eat_flag_lock;
+	lock_arr[7] = &resources->print_lock;
+	lock_arr[8] = &resources->fp_flag_lock;
+	lock_arr[9] = &resources->stop_flag_lock;
 	i = 0;
-	while (i <= 4)
+	while (i <= 9)
 	{
 		if (pthread_mutex_init(lock_arr[i], NULL) != 0)
 			break ;
 		i++;
 	}
-	if (i == 5)
+	if (i == 10)
 		return (1);
 	else
 	{
