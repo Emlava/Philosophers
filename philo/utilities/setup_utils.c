@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 15:55:58 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/13 22:22:13 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/14 23:24:41 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ int	create_locks(t_resources *resources)
 	lock_arr[5] = &resources->odds_eat_flag_lock;
 	lock_arr[6] = &resources->evens_eat_flag_lock;
 	lock_arr[7] = &resources->print_lock;
-	lock_arr[8] = &resources->fp_flag_lock;
+	lock_arr[8] = &resources->full_philos_lock;
 	lock_arr[9] = &resources->stop_flag_lock;
 	i = 0;
 	while (i <= 9)

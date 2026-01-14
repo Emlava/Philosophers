@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:28 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/13 22:41:25 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/14 23:24:41 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,20 @@ static int	manage_philosopher_list(t_resources *resources)
 	pthread_t			monitor;
 	
 	created_philos = 0;
+	resources->curr_philo_node = resources->philosopher_list;
 	if (resources->requested_philos % 2 == 1)
 		resources->odd_philos = resources->requested_philos / 2 + 1;
 	else
 		resources->odd_philos = resources->requested_philos / 2;
 	resources->even_philos = resources->requested_philos / 2;
-	resources->curr_philo_node = resources->philosopher_list;
-	resources->node_ready_flag = 0;
+	resources->odds_meal_count = 0;
+	resources->evens_meal_count = 0;
 	resources->error_creating_thread_flag = 0;
+	resources->node_ready_flag = 0;
 	resources->start_simulation_flag = 0;
 	resources->odds_eat_flag = 0;
 	resources->evens_eat_flag = 0;
-	resources->full_philos_flag = 0;
+	resources->full_philos = 0;
 	resources->stop_flag = 0;
 	return_value = 1;
 	while (created_philos++ < resources->requested_philos && return_value == 1)
@@ -76,7 +78,6 @@ static int	manage_philosopher_list(t_resources *resources)
 	while (!pthread_mutex_lock(&resources->stop_flag_lock) && resources->stop_flag != 1)
 	{
 		pthread_mutex_unlock(&resources->stop_flag_lock);
-		// Raise odds_eat_flag
 		pthread_mutex_lock(&resources->odds_eat_flag_lock);
 		resources->odds_eat_flag = 1;
 		pthread_mutex_unlock(&resources->odds_eat_flag_lock);
@@ -99,7 +100,7 @@ static int	manage_philosopher_list(t_resources *resources)
 		pthread_mutex_lock(&resources->evens_eat_flag_lock);
 		resources->evens_eat_flag = 1;
 		pthread_mutex_unlock(&resources->evens_eat_flag_lock);
-		while (!pthread_mutex_lock(&resources->evens_meal_count_lock) && resources->evens_meal_count != resources->odd_philos)
+		while (!pthread_mutex_lock(&resources->evens_meal_count_lock) && resources->evens_meal_count != resources->even_philos)
 		{
 			pthread_mutex_unlock(&resources->evens_meal_count_lock);
 			usleep(2000);
@@ -150,7 +151,7 @@ static int	manage_philosopher_list(t_resources *resources)
 	pthread_mutex_destroy(&resources->odds_eat_flag_lock);
 	pthread_mutex_destroy(&resources->evens_eat_flag_lock);
 	pthread_mutex_destroy(&resources->print_lock);
-	pthread_mutex_destroy(&resources->fp_flag_lock);
+	pthread_mutex_destroy(&resources->full_philos_lock);
 	pthread_mutex_destroy(&resources->stop_flag_lock);
 	return (return_value);
 }

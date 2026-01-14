@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/13 22:21:34 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/14 23:24:41 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ typedef struct s_resources
 	int					start_simulation_flag;
 	int					odds_eat_flag;
 	int					evens_eat_flag;
-	int					full_philos_flag;
+	int					full_philos;
 	int					stop_flag;
 	struct timeval		initial_time;
 	pthread_mutex_t	 	*forks;
@@ -63,7 +63,7 @@ typedef struct s_resources
 	pthread_mutex_t		odds_eat_flag_lock;
 	pthread_mutex_t		evens_eat_flag_lock;
 	pthread_mutex_t 	print_lock;
-	pthread_mutex_t		fp_flag_lock;
+	pthread_mutex_t		full_philos_lock;
 	pthread_mutex_t		stop_flag_lock;
 }	t_resources;
 

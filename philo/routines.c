@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/13 22:42:11 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/14 23:32:26 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,16 @@ void	*monitor_routine(void *arg)
 			break ;
 		}
 		pthread_mutex_unlock(&curr_philo_node->pmits_lock);
-		pthread_mutex_lock(&resources->fp_flag_lock);
-		if (resources->full_philos_flag == resources->nbr_of_meals)
+		pthread_mutex_lock(&resources->full_philos_lock);
+		if (resources->full_philos == resources->requested_philos)
 		{
 			pthread_mutex_lock(&resources->stop_flag_lock);
 			resources->stop_flag = 1;
 			pthread_mutex_unlock(&resources->stop_flag_lock);
-			pthread_mutex_unlock(&resources->fp_flag_lock);
+			pthread_mutex_unlock(&resources->full_philos_lock);
 			break ;
 		}
-		pthread_mutex_unlock(&resources->fp_flag_lock);
+		pthread_mutex_unlock(&resources->full_philos_lock);
 		if (curr_philo_node->next != NULL)
 			curr_philo_node = curr_philo_node->next;
 		else
@@ -97,9 +97,9 @@ static void	evens_tasks(t_resources *resources, t_philosopher_list *philosopher_
 			break ;
 
 		// Eating
-		while (!pthread_mutex_lock(&resources->odds_eat_flag_lock) && !resources->odds_eat_flag)
+		while (!pthread_mutex_lock(&resources->evens_eat_flag_lock) && !resources->evens_eat_flag)
 		{
-			pthread_mutex_unlock(&resources->odds_eat_flag_lock);
+			pthread_mutex_unlock(&resources->evens_eat_flag_lock);
 			usleep(1000);
 			pthread_mutex_lock(&resources->stop_flag_lock);
 			if (resources->stop_flag == 1)
@@ -109,7 +109,7 @@ static void	evens_tasks(t_resources *resources, t_philosopher_list *philosopher_
 			}
 			pthread_mutex_unlock(&resources->stop_flag_lock);
 		}
-		pthread_mutex_unlock(&resources->odds_eat_flag_lock);
+		pthread_mutex_unlock(&resources->evens_eat_flag_lock);
 		pthread_mutex_lock(left_fork);
 		if (!print_state_change(resources, TF, philosopher_node))
 		{
@@ -130,14 +130,14 @@ static void	evens_tasks(t_resources *resources, t_philosopher_list *philosopher_
 			break ;
 		}
 		total_meals_had++;
-		pthread_mutex_lock(&resources->odds_meal_count_lock);
-		resources->odds_meal_count++;
-		pthread_mutex_unlock(&resources->odds_meal_count_lock);
+		pthread_mutex_lock(&resources->evens_meal_count_lock);
+		resources->evens_meal_count++;
+		pthread_mutex_unlock(&resources->evens_meal_count_lock);
 		if (total_meals_had == resources->nbr_of_meals)
 		{
-			pthread_mutex_lock(&resources->fp_flag_lock);
-			resources->full_philos_flag++;
-			pthread_mutex_unlock(&resources->fp_flag_lock);
+			pthread_mutex_lock(&resources->full_philos_lock);
+			resources->full_philos++;
+			pthread_mutex_unlock(&resources->full_philos_lock);
 		}
 		gettimeofday(&curr_time, NULL);
 		while (!pthread_mutex_lock(&philosopher_node->pmits_lock)
@@ -151,9 +151,9 @@ static void	evens_tasks(t_resources *resources, t_philosopher_list *philosopher_
 		pthread_mutex_unlock(right_fork);
 			
 		// Waiting for odds_meal_count to go back to 0
-		while (!pthread_mutex_lock(&resources->odds_meal_count_lock) && resources->odds_meal_count != 0)
+		while (!pthread_mutex_lock(&resources->evens_meal_count_lock) && resources->evens_meal_count != 0)
 		{
-			pthread_mutex_unlock(&resources->odds_meal_count_lock);
+			pthread_mutex_unlock(&resources->evens_meal_count_lock);
 			usleep(1000);
 			pthread_mutex_lock(&resources->stop_flag_lock);
 			if (resources->stop_flag == 1)
@@ -163,7 +163,7 @@ static void	evens_tasks(t_resources *resources, t_philosopher_list *philosopher_
 			}
 			pthread_mutex_unlock(&resources->stop_flag_lock);
 		}
-		pthread_mutex_unlock(&resources->odds_meal_count_lock);
+		pthread_mutex_unlock(&resources->evens_meal_count_lock);
 	}
 	return ;
 }
@@ -239,9 +239,9 @@ static void	odds_tasks(t_resources *resources, t_philosopher_list *philosopher_n
 		pthread_mutex_unlock(&resources->odds_meal_count_lock);
 		if (total_meals_had == resources->nbr_of_meals)
 		{
-			pthread_mutex_lock(&resources->fp_flag_lock);
-			resources->full_philos_flag++;
-			pthread_mutex_unlock(&resources->fp_flag_lock);
+			pthread_mutex_lock(&resources->full_philos_lock);
+			resources->full_philos++;
+			pthread_mutex_unlock(&resources->full_philos_lock);
 		}
 		gettimeofday(&curr_time, NULL);
 		while (!pthread_mutex_lock(&philosopher_node->pmits_lock)
