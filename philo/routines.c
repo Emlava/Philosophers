@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/15 15:28:33 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/15 18:13:42 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ static void	evens_tasks(t_resources *resources, t_philosopher_list *philosopher_
 	
 	total_meals_had = 0;
 	// Forks assignment
-	left_fork = &resources->forks[philosopher_node->philosopher = 2];
+	left_fork = &resources->forks[philosopher_node->philosopher - 2];
 	right_fork = &resources->forks[philosopher_node->philosopher - 1];
 
 	while (1)
