@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/14 23:32:26 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/15 15:28:33 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,11 +79,9 @@ static void	evens_tasks(t_resources *resources, t_philosopher_list *philosopher_
 	struct timeval	curr_time;
 	
 	total_meals_had = 0;
-	if (philosopher_node->philosopher != resources->requested_philos)
-		right_fork = &resources->forks[philosopher_node->philosopher - 1];
-	else
-		right_fork = &resources->forks[0];
-	left_fork = &resources->forks[philosopher_node->philosopher - 2];
+	// Forks assignment
+	left_fork = &resources->forks[philosopher_node->philosopher = 2];
+	right_fork = &resources->forks[philosopher_node->philosopher - 1];
 
 	while (1)
 	{	
@@ -176,14 +174,16 @@ static void	odds_tasks(t_resources *resources, t_philosopher_list *philosopher_n
 	struct timeval	curr_time;
 	
 	total_meals_had = 0;
-	if (philosopher_node->philosopher == 1 && resources->requested_philos != 1)
-		left_fork = &resources->forks[resources->requested_philos - 1];
-	else if (philosopher_node->philosopher == resources->requested_philos)
-		right_fork = &resources->forks[0];
-	if (philosopher_node->philosopher > 1)
-		left_fork = &resources->forks[philosopher_node->philosopher - 2];
-	if (philosopher_node->philosopher < resources->requested_philos)
-		right_fork = &resources->forks[philosopher_node->philosopher - 1];
+
+	// Forks assignment
+	if (resources->requested_philos != 1)
+	{
+		if (philosopher_node->philosopher > 1)
+			left_fork = &resources->forks[philosopher_node->philosopher - 2];
+		else
+			left_fork = &resources->forks[resources->requested_philos - 1];
+	}
+	right_fork = &resources->forks[philosopher_node->philosopher - 1];
 
 	if (resources->requested_philos == 1)
 	{
