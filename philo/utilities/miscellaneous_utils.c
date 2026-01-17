@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:23 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/16 16:17:55 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/17 13:10:08 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,8 @@ int	print_state_change(t_resources *resources, char *new_state,
 		return (0);
 	}
 	pthread_mutex_unlock(&resources->stop_flag_lock);
-	printf("%ldms %d %s\n", get_time_interval_ms(resources->initial_time, current_time), 
-		philosopher_node->philosopher, new_state);
+	printf("%ldms %d %s\n", get_time_interval_ms(resources->initial_time,
+			current_time), philosopher_node->philosopher, new_state);
 	pthread_mutex_unlock(&resources->print_lock);
 	return (1);
 }

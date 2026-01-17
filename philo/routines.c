@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/16 16:21:13 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/17 15:06:01 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,6 @@ static void	evens_tasks(t_resources *resources, t_philosopher_list *philosopher_
 	struct timeval	curr_time;
 	
 	total_meals_had = 0;
-	// Forks assignment
 	left_fork = &resources->forks[philosopher_node->philosopher - 2];
 	right_fork = &resources->forks[philosopher_node->philosopher - 1];
 
@@ -159,7 +158,6 @@ static void	odds_tasks(t_resources *resources, t_philosopher_list *philosopher_n
 	
 	total_meals_had = 0;
 
-	// Forks assignment
 	if (resources->requested_philos != 1)
 	{
 		if (philosopher_node->philosopher > 1)

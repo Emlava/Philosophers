@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   setup_utils.c                                      :+:      :+:    :+:   */
+/*   setup_utils_1.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 15:55:58 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/14 23:24:41 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/17 14:34:32 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,24 @@ int	convert_args_to_int(char *av[], t_resources *resources, int ac)
 		return (1);
 }
 
-int	allocate_philos_list(t_philosopher_list **philosopher_list, int requested_philos)
+static int	manage_philo_node(t_philosopher_list **philosopher_node, int i)
+{
+	if (i > 1)
+	{
+		(*philosopher_node)->next = malloc(sizeof(t_philosopher_list));
+		if (!(*philosopher_node)->next)
+			return (0);
+		*philosopher_node = (*philosopher_node)->next;
+	}
+	(*philosopher_node)->philosopher = i;
+	(*philosopher_node)->prev_meal_or_initial_ts.tv_sec = -1;
+	if (pthread_mutex_init(&(*philosopher_node)->pmits_lock, NULL) != 0)
+		return (0);
+	return (1);
+}
+
+int	allocate_philos_list(t_philosopher_list **philosopher_list,
+	int requested_philos)
 {
 	int					return_value;
 	int					i;
@@ -40,34 +57,20 @@ int	allocate_philos_list(t_philosopher_list **philosopher_list, int requested_ph
 
 	return_value = 1;
 	i = 1;
-	// Make function allocate_node() and use it here and inside the loop
 	*philosopher_list = malloc(sizeof(t_philosopher_list));
-	if (!(*philosopher_list))
+	if (!*philosopher_list)
 		return (0);
-	(*philosopher_list)->philosopher = i;
-	(*philosopher_list)->prev_meal_or_initial_ts.tv_sec = -1;
-	if (pthread_mutex_init(&(*philosopher_list)->pmits_lock, NULL) != 0)
-		return_value = 0;
 	philosopher_list_cpy = *philosopher_list;
+	if (!manage_philo_node(&philosopher_list_cpy, i))
+		return_value = 0;
 	while (i++ < requested_philos && return_value == 1)
 	{
-		philosopher_list_cpy->next = malloc(sizeof(t_philosopher_list));
-		if (!philosopher_list_cpy->next)
-		{
-			return_value = 0;
-			break ;
-		}
-		philosopher_list_cpy = philosopher_list_cpy->next;
-		philosopher_list_cpy->philosopher = i;
-		philosopher_list_cpy->prev_meal_or_initial_ts.tv_sec = -1;
-		if (pthread_mutex_init(&philosopher_list_cpy->pmits_lock, NULL) != 0)
+		if (!manage_philo_node(&philosopher_list_cpy, i))
 			return_value = 0;
 	}
 	philosopher_list_cpy->next = NULL;
 	if (!return_value)
-	{
-		free_philos_list(*philosopher_list);	
-	}
+		free_philos_list(*philosopher_list);
 	return (return_value);
 }
 
@@ -75,7 +78,8 @@ int	create_forks(t_resources *resources)
 {
 	int	i;
 
-	resources->forks = malloc(sizeof(pthread_mutex_t) * resources->requested_philos);
+	resources->forks
+		= malloc(sizeof(pthread_mutex_t) * resources->requested_philos);
 	if (!resources->forks)
 		return (0);
 	i = 0;
@@ -90,38 +94,4 @@ int	create_forks(t_resources *resources)
 		i++;
 	}
 	return (1);
-}
-
-int	create_locks(t_resources *resources)
-{
-	pthread_mutex_t		*lock_arr[10];
-	int					i;
-
-	lock_arr[0] = &resources->ect_flag_lock;
-	lock_arr[1] = &resources->node_ready_flag_lock;
-	lock_arr[2] = &resources->start_simulation_flag_lock;
-	lock_arr[3] = &resources->odds_meal_count_lock;
-	lock_arr[4] = &resources->evens_meal_count_lock;
-	lock_arr[5] = &resources->odds_eat_flag_lock;
-	lock_arr[6] = &resources->evens_eat_flag_lock;
-	lock_arr[7] = &resources->print_lock;
-	lock_arr[8] = &resources->full_philos_lock;
-	lock_arr[9] = &resources->stop_flag_lock;
-	i = 0;
-	while (i <= 9)
-	{
-		if (pthread_mutex_init(lock_arr[i], NULL) != 0)
-			break ;
-		i++;
-	}
-	if (i == 10)
-		return (1);
-	else
-	{
-		free_philos_list(resources->philosopher_list);
-		destroy_forks(resources->forks, resources->requested_philos);
-		while (i--)
-			pthread_mutex_destroy(lock_arr[i]);
-		return (0);
-	}
 }

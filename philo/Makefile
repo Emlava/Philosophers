@@ -1,7 +1,8 @@
 NAME = philo
 CC = cc
-FLAGS = -Wall -Werror -Wextra #-fsanitize=address
-OBJS = main.o utilities/setup_utils.o utilities/miscellaneous_utils.o utilities/cleaning_utils.o routines.o
+FLAGS = -Wall -Wextra -Werror #-fsanitize=address
+OBJS = main.o utilities/setup_utils_1.o utilities/setup_utils_2.o utilities/miscellaneous_utils.o \
+	utilities/cleaning_utils.o routines.o
 
 .PHONY: all clean fclean re
 

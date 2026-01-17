@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:01:28 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/16 15:18:40 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/17 16:22:31 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ static int	manage_philosopher_list(t_resources *resources)
 	int					return_value;
 	pthread_t			monitor;
 	
+	// Assignment
 	created_philos = 0;
 	resources->curr_philo_node = resources->philosopher_list;
 	if (resources->requested_philos % 2 == 1)
@@ -35,7 +36,10 @@ static int	manage_philosopher_list(t_resources *resources)
 	resources->full_philos = 0;
 	resources->stop_flag = 0;
 	return_value = 1;
-	while (created_philos++ < resources->requested_philos && return_value == 1)
+	//
+	
+	// Thread creation
+	while (created_philos < resources->requested_philos && return_value == 1)
 	{
 		if (pthread_create(&resources->curr_philo_node->thread, NULL, philosophers_routine, resources) != 0)
 		{
@@ -56,10 +60,14 @@ static int	manage_philosopher_list(t_resources *resources)
 			resources->node_ready_flag = 0;
 			resources->curr_philo_node = resources->curr_philo_node->next;
 			pthread_mutex_unlock(&resources->node_ready_flag_lock);
+			created_philos++;
 		}
 	}
 	if (return_value == 1 && pthread_create(&monitor, NULL, monitor_routine, resources) != 0)
 		return_value = 0;
+	//
+	
+	// Kick off the simulation
 	gettimeofday(&resources->initial_time, NULL);
 	if (return_value == 1)
 	{
@@ -72,12 +80,14 @@ static int	manage_philosopher_list(t_resources *resources)
 		pthread_mutex_lock(&resources->start_simulation_flag_lock);
 		resources->start_simulation_flag = 2;
 		pthread_mutex_unlock(&resources->start_simulation_flag_lock);
+		full_cleanup(resources, return_value, created_philos, monitor);
+		return (return_value);
 	}
+	//
 
 	// Here we manage the order of eating between odds and evens
-	while (!pthread_mutex_lock(&resources->stop_flag_lock) && resources->stop_flag != 1)
+	while (1)
 	{
-		pthread_mutex_unlock(&resources->stop_flag_lock);
 		pthread_mutex_lock(&resources->odds_eat_flag_lock);
 		resources->odds_eat_flag = 1;
 		pthread_mutex_unlock(&resources->odds_eat_flag_lock);
@@ -89,7 +99,8 @@ static int	manage_philosopher_list(t_resources *resources)
 			if (resources->stop_flag == 1)
 			{
 				pthread_mutex_unlock(&resources->stop_flag_lock);
-				return (1);
+				full_cleanup(resources, return_value, created_philos, monitor);
+				return (return_value);
 			}
 			pthread_mutex_unlock(&resources->stop_flag_lock);
 		}
@@ -108,7 +119,8 @@ static int	manage_philosopher_list(t_resources *resources)
 			if (resources->stop_flag == 1)
 			{
 				pthread_mutex_unlock(&resources->stop_flag_lock);
-				return (1);
+				full_cleanup(resources, return_value, created_philos, monitor);
+				return (return_value);
 			}
 			pthread_mutex_unlock(&resources->stop_flag_lock);
 		}
@@ -117,43 +129,6 @@ static int	manage_philosopher_list(t_resources *resources)
 		resources->evens_meal_count = 0;
 		pthread_mutex_unlock(&resources->evens_meal_count_lock);
 	}
-	pthread_mutex_unlock(&resources->stop_flag_lock);
-	// Odds eat again, and back and forth
-	// Do this until monitor raises stop_flag
-
-	
-	// Here's the cleanup
-	resources->curr_philo_node = resources->philosopher_list;
-	if (return_value == 1)
-	{
-		while (created_philos--)
-		{
-			pthread_join(resources->curr_philo_node->thread, NULL);
-			resources->curr_philo_node = resources->curr_philo_node->next;
-		}
-		pthread_join(monitor, NULL);
-	}
-	else
-	{
-		while (--created_philos)
-		{
-			pthread_detach(resources->curr_philo_node->thread);
-			resources->curr_philo_node = resources->curr_philo_node->next;
-		}
-	}
-	free_philos_list(resources->philosopher_list);
-	destroy_forks(resources->forks, resources->requested_philos);
-	pthread_mutex_destroy(&resources->ect_flag_lock);
-	pthread_mutex_destroy(&resources->node_ready_flag_lock);
-	pthread_mutex_destroy(&resources->start_simulation_flag_lock);
-	pthread_mutex_destroy(&resources->odds_meal_count_lock);
-	pthread_mutex_destroy(&resources->evens_meal_count_lock);
-	pthread_mutex_destroy(&resources->odds_eat_flag_lock);
-	pthread_mutex_destroy(&resources->evens_eat_flag_lock);
-	pthread_mutex_destroy(&resources->print_lock);
-	pthread_mutex_destroy(&resources->full_philos_lock);
-	pthread_mutex_destroy(&resources->stop_flag_lock);
-	return (return_value);
 }
 
 int main(int ac, char *av[])
