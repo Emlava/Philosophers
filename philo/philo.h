@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/17 15:13:10 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/18 14:56:46 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,11 +82,19 @@ long	get_time_interval_ms(struct timeval first_ts, struct timeval second_ts);
 int		print_state_change(t_resources *resources, char *new_state,
 			t_philosopher_list *philosopher_node);
 
+/**** utilities/manage_simulation_utils.c ****/
+void	assign_resources(t_resources *resources, int *created_philos,
+			int *return_value);
+void	wait_for_node_to_be_ready(t_resources *resources);
+
 /**** utilities/cleaning_utils.c ****/
 void	free_philos_list(t_philosopher_list *philosopher_list);
 void	destroy_forks(pthread_mutex_t *forks, int nbr_of_forks);
 void	full_cleanup(t_resources *resources, int return_value,
 			int created_philos, pthread_t monitor);
+
+/**** manage_simulation.c ****/
+int		manage_simulation(t_resources *resources);
 
 /**** routines.c ****/
 void	*monitor_routine(void *arg);

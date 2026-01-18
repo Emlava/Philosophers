@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:29:34 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/17 15:06:01 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/18 15:15:23 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,15 +84,11 @@ static void	evens_tasks(t_resources *resources, t_philosopher_list *philosopher_
 
 	while (1)
 	{	
-		// Sleeping
 		if (!print_state_change(resources, S, philosopher_node))
 			break ;
 		usleep(resources->time_to_sleep * 1000);
-
-		// Thinking
 		if (!print_state_change(resources, T, philosopher_node))
 			break ;
-		// Eating
 		while (!pthread_mutex_lock(&resources->evens_eat_flag_lock) && !resources->evens_eat_flag)
 		{
 			pthread_mutex_unlock(&resources->evens_eat_flag_lock);
@@ -157,7 +153,6 @@ static void	odds_tasks(t_resources *resources, t_philosopher_list *philosopher_n
 	struct timeval	curr_time;
 	
 	total_meals_had = 0;
-
 	if (resources->requested_philos != 1)
 	{
 		if (philosopher_node->philosopher > 1)
@@ -166,7 +161,6 @@ static void	odds_tasks(t_resources *resources, t_philosopher_list *philosopher_n
 			left_fork = &resources->forks[resources->requested_philos - 1];
 	}
 	right_fork = &resources->forks[philosopher_node->philosopher - 1];
-
 	if (resources->requested_philos == 1)
 	{
 		pthread_mutex_lock(right_fork);
@@ -179,10 +173,8 @@ static void	odds_tasks(t_resources *resources, t_philosopher_list *philosopher_n
 		pthread_mutex_unlock(&resources->stop_flag_lock);
 		return ;
 	}
-
 	while (1)
 	{
-		// Eating
 		while (!pthread_mutex_lock(&resources->odds_eat_flag_lock) && !resources->odds_eat_flag)
 		{
 			pthread_mutex_unlock(&resources->odds_eat_flag_lock);
@@ -235,13 +227,9 @@ static void	odds_tasks(t_resources *resources, t_philosopher_list *philosopher_n
 		pthread_mutex_unlock(&philosopher_node->pmits_lock);
 		pthread_mutex_unlock(left_fork);
 		pthread_mutex_unlock(right_fork);
-		
-		// Sleeping
 		if (!print_state_change(resources, S, philosopher_node))
 			break ;
 		usleep(resources->time_to_sleep * 1000);
-
-		// Thinking
 		if (!print_state_change(resources, T, philosopher_node))
 			break ;		
 	}
@@ -259,8 +247,6 @@ void	*philosophers_routine(void *arg)
 	philosopher_node = resources->curr_philo_node;
 	resources->node_ready_flag = 1;
 	pthread_mutex_unlock(&resources->node_ready_flag_lock);
-
-	// We wait (sleeping) here until main thread raises start_simulation_flag
 	while (!pthread_mutex_lock(&resources->start_simulation_flag_lock) && resources->start_simulation_flag == 0)
 	{
 		pthread_mutex_unlock(&resources->start_simulation_flag_lock);
@@ -272,11 +258,9 @@ void	*philosophers_routine(void *arg)
 		return (NULL);
 	}
 	pthread_mutex_unlock(&resources->start_simulation_flag_lock);
-	// The monitor is waiting for this
 	pthread_mutex_lock(&philosopher_node->pmits_lock);
 	philosopher_node->prev_meal_or_initial_ts = resources->initial_time;
 	pthread_mutex_unlock(&philosopher_node->pmits_lock);
-	//
 	if (philosopher_node->philosopher % 2 == 1)
 		odds_tasks(resources, philosopher_node);
 	else
