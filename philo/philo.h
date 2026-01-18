@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/18 14:56:46 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/18 15:23:01 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,5 +99,9 @@ int		manage_simulation(t_resources *resources);
 /**** routines.c ****/
 void	*monitor_routine(void *arg);
 void	*philosophers_routine(void *arg);
+
+/**** philosopher_tasks.c ****/
+void	odd_tasks(t_resources *resources, t_philosopher_list *philosopher_node);
+void	even_tasks(t_resources *resources, t_philosopher_list *philosopher_node);
 
 #endif
