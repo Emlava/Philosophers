@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/18 15:23:01 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/19 19:39:00 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,14 @@ long	get_time_interval_ms(struct timeval first_ts, struct timeval second_ts);
 int		print_state_change(t_resources *resources, char *new_state,
 			t_philosopher_list *philosopher_node);
 
+/**** utilities/routines_utils.c ****/
+int		wait_for_simulation_to_start(t_resources *resources);
+int		wait_for_philo_to_be_ready(t_resources *resources,
+			t_philosopher_list *philo_node);
+int		check_for_pulse(t_philosopher_list *philo_node,
+			struct timeval current_time, t_resources *resources);
+int		check_if_all_philos_are_full(t_resources *resources);
+
 /**** utilities/manage_simulation_utils.c ****/
 void	assign_resources(t_resources *resources, int *created_philos,
 			int *return_value);
@@ -97,11 +105,13 @@ void	full_cleanup(t_resources *resources, int return_value,
 int		manage_simulation(t_resources *resources);
 
 /**** routines.c ****/
-void	*monitor_routine(void *arg);
 void	*philosophers_routine(void *arg);
+void	*monitor_routine(void *arg);
 
 /**** philosopher_tasks.c ****/
-void	odd_tasks(t_resources *resources, t_philosopher_list *philosopher_node);
-void	even_tasks(t_resources *resources, t_philosopher_list *philosopher_node);
+void	odd_tasks(t_resources *resources,
+			t_philosopher_list *philosopher_node);
+void	even_tasks(t_resources *resources,
+			t_philosopher_list *philosopher_node);
 
 #endif
