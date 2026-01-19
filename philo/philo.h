@@ -6,7 +6,7 @@
 /*   By: elara-va <elara-va@student.42belgium.be    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 18:00:12 by elara-va          #+#    #+#             */
-/*   Updated: 2026/01/19 19:39:00 by elara-va         ###   ########.fr       */
+/*   Updated: 2026/01/19 21:30:16 by elara-va         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,14 @@ int		check_if_all_philos_are_full(t_resources *resources);
 void	assign_resources(t_resources *resources, int *created_philos,
 			int *return_value);
 void	wait_for_node_to_be_ready(t_resources *resources);
+
+/**** utilities/tasks_utils.c ****/
+int		start_eating(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork,
+			t_resources *resources, t_philosopher_list *philosopher_node);
+void	wait_time_to_eat(struct timeval *curr_time,
+			t_philosopher_list *philosopher_node, t_resources *resources);
+int		sleep_and_think(t_resources *resources,
+			t_philosopher_list *philosopher_node);
 
 /**** utilities/cleaning_utils.c ****/
 void	free_philos_list(t_philosopher_list *philosopher_list);
